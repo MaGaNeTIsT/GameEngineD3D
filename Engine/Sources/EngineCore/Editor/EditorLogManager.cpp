@@ -1,5 +1,5 @@
 ﻿#include "EditorLogManager.h"
-#if _EDITOR_ONLY
+#if !(_SHIPPING_MODE)
 #include "Base/Timer/Timer.h"
 #include <imgui.h>
 
