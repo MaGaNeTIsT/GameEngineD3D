@@ -174,7 +174,7 @@ namespace PigeonEngine
                         Datas[EmptyID].NextID = TempNextID;
                     }
                 }
-                Datas[EmptyID].Data = new _TDataType(std::move(InData));
+                Datas[EmptyID].Data = new _TDataType(std::forward(InData));
 
                 Datas[NextEmptyID].PrevID = TSparseArray::MaxID;
                 EmptyID = NextEmptyID;
@@ -193,7 +193,7 @@ namespace PigeonEngine
                         Datas[TempPrevID].NextID = EmptyID;
                     }
                 }
-                TempData.Data = new _TDataType(std::move(InData));
+                TempData.Data = new _TDataType(std::forward(InData));
                 Datas.push_back(std::move(TempData));
                 EmptyID++;
             }
@@ -302,6 +302,18 @@ namespace PigeonEngine
         PE_NODISCARD UINT32 Length()const
         {
             return static_cast<UINT32>(Datas.size());
+        }
+        PE_NODISCARD _TDataType& operator[](const UINT32 InIndex)
+        {
+            Check((InIndex < Length()));
+            Check((!!(Datas[InIndex].Data)));
+            return (*(Datas[InIndex].Data));
+        }
+        PE_NODISCARD const _TDataType& operator[](const UINT32 InIndex)
+        {
+            Check((InIndex < Length()));
+            Check((!!(Datas[InIndex].Data)));
+            return (*(Datas[InIndex].Data));
         }
     private:
         UINT32                      StartID;
