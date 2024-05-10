@@ -9,7 +9,7 @@
 namespace PigeonEngine
 {
 
-	class EMath
+	class EMath final
 	{
 	public:
 		/** Computes absolute value in a generic way */
@@ -689,10 +689,12 @@ namespace PigeonEngine
 		static PE_FORCEINLINE FLOAT		DegreesToRadians(FLOAT const& DegVal) { return DegVal * (PE_PI / 180.f); }
 		static PE_FORCEINLINE DOUBLE	DegreesToRadians(DOUBLE const& DegVal) { return DegVal * (PE_DOUBLE_PI / 180.0); }
 	private:
-		EMath() {}
-		EMath(const EMath&) {}
+		EMath()noexcept {}
+		EMath(const EMath&)noexcept {}
+		EMath(EMath&&)noexcept {}
 		~EMath() {}
-		EMath& operator=(const EMath&) { return (*this); }
+		EMath& operator=(const EMath&)noexcept { return (*this); }
+		EMath& operator=(EMath&&)noexcept { return (*this); }
 	public:
 		static EMath* GetSingleton()
 		{
