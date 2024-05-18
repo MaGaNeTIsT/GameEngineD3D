@@ -52,6 +52,10 @@ PigeonEngine::FCharacter* PigeonEngine::PCharacter::GetPhysicsCharacter()
 {
 	return Character;
 }
+PigeonEngine::PMovementComponent* PigeonEngine::PCharacter::GetMovementComponent()
+{
+	return MoveMentComponent;
+}
 #if _EDITOR_ONLY
 void PigeonEngine::PCharacter::EditorTick(FLOAT deltaTime)
 {

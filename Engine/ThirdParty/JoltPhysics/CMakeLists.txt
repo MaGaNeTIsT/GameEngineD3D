@@ -102,6 +102,7 @@ option(PLATFORM_WINDOWS "Build on WindowsPlatform" ON)
 if(PLATFORM_WINDOWS)
 	target_compile_definitions(${PROJECT_NAME} PUBLIC
 		$<$<BOOL:${PLATFORM_WINDOWS}>:_WINDOWS>
+		__STDC_WANT_SECURE_LIB__
 	)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		VS_WINDOWS_TARGET_PLATFORM_MIN_VERSION "10.0.18362.0"

@@ -15,6 +15,7 @@
 #include <PhysicsTest/PhysicsTest.h>
 #include <PigeonBase/Object/Component/Physics/PhysicsComponent.h>
 #include "../../../../../../EngineThirdParty/JoltPhysics/Headers/PhysicsManager.h"
+#include "PigeonBase/Object/Controller/CharacterController.h"
 #include "Editor/EditorLogManager.h"
 
 
@@ -227,6 +228,12 @@ namespace PigeonEngine
 			New->AddComponent(New->SkeletalMeshComponent, ETransform());
 
 			New->SetActorLocation(Vector3(-20.0f, 0.0f, 50.0f));
+
+			PCharacterController* CharacterController = new PCharacterController();
+			CharacterController->SetIsTickable(TRUE);
+			POBJ_DEBUGNAME_SET(CharacterController, "Physics Test Character Controller");
+			CharacterController->SetCharacter(New);
+			this->GetWorld()->AddActor(CharacterController);
 		}
 
 		{
@@ -236,7 +243,7 @@ namespace PigeonEngine
 			New->SetIsTickable(TRUE);
 			this->GetWorld()->AddActor(New);
 
-			FBoxShape* Shape = new FBoxShape(Vector3(500.f, 10.f, 500.f), 0.f);
+			FBoxShape* Shape = new FBoxShape(Vector3(5000.f, 10.f, 5000.f), 0.f);
 			PPhysicsComponent* PhysicsComponent = new PPhysicsComponent(Shape);
 			PhysicsComponent->SetOwnerActor(New);
 			New->SetActorLocation(Vector3(0.0f, -10.0f, 0.0f));

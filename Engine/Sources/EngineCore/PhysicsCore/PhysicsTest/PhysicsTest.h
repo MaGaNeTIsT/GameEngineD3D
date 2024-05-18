@@ -3,6 +3,7 @@
 #include "../../Core/PigeonBase/Object/Actor/LevelCharacter.h"
 #include "../../Core/PigeonBase/Object/Component/Primitive/StaticMeshComponent.h"
 #include "../../../../EngineThirdParty/JoltPhysics/Headers/Character/Character.h"
+#include "PigeonBase/Object/Controller/CharacterController.h"
 
 
 namespace PigeonEngine
@@ -15,5 +16,6 @@ namespace PigeonEngine
 		virtual void UninitCharacter() override;
 		PStaticMeshComponent* StaticMeshComponent = NULL;
 		FShape* Shape = NULL;
+		PCharacterController* CharacterController = NULL;
 	};
 }

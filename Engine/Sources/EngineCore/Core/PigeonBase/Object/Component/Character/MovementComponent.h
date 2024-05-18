@@ -2,10 +2,24 @@
 #include "../Component.h"
 #include "../ActorComponent.h"
 #include "../../Actor/LevelCharacter.h"
+#include "PigeonBase/Object/Controller/CharacterController.h"
 
 
 namespace PigeonEngine 
 {
+	enum class MoveType : UINT8
+	{
+		Move,
+		Stop,
+		None
+	};
+
+	struct EMoveState
+	{
+		Vector3 Direction;
+		MoveType MoveType;
+		int Order;
+	};
 
 	class PMovementComponent :public PActorComponent
 	{
@@ -19,7 +33,13 @@ namespace PigeonEngine
 
 		void SetCharacter(PCharacter* InCharacter) { m_Character = InCharacter; };
 
-		virtual void HandleInput(Vector3 InMovementDirection, BOOL32 InJump, BOOL32 inSwitchStance);
+		void HandleInput(const ECharacterMoveInput& Input);
+
+	private:
+		virtual void HandleInputInternal(Vector3 InMovementDirection, BOOL32 InJump, BOOL32 InSwitchStance, BOOL32 InRun);
+
+	public:
+
 
 	private:
 		PCharacter* m_Character = nullptr;
