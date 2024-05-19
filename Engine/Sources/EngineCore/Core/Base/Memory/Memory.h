@@ -98,6 +98,40 @@ namespace PigeonEngine
 			HeapPtr = nullptr;
 			HeapSize = (_TSizeType)0;
 		}
+		PE_INLINE void Append(const THeapBase& Other)
+		{
+			if ((Other.HeapSize > (_TSizeType)0))
+			{
+				_TSizeType NewSize = Other.HeapSize + HeapSize;
+				TUniquePtr<UINT8[]> NewHeapPtr = EMemory::MakeUnique<UINT8[]>(NewSize);
+				UINT8* RawDataPtr = NewHeapPtr.get();
+				if (HeapSize > (_TSizeType)0)
+				{
+					EMemory::Memmov(RawDataPtr, Data(), HeapSize);
+					RawDataPtr = &(RawDataPtr[HeapSize]);
+				}
+				EMemory::Memcpy(RawDataPtr, Other.Data(), Other.HeapSize);
+				HeapPtr = EMemory::Move(Other.HeapPtr);
+				HeapSize = EMemory::Move(Other.HeapSize);
+			}
+		}
+		PE_INLINE void Append(THeapBase&& Other)
+		{
+			if ((Other.HeapSize > (_TSizeType)0))
+			{
+				_TSizeType NewSize = Other.HeapSize + HeapSize;
+				TUniquePtr<UINT8[]> NewHeapPtr = EMemory::MakeUnique<UINT8[]>(NewSize);
+				UINT8* RawDataPtr = NewHeapPtr.get();
+				if (HeapSize > (_TSizeType)0)
+				{
+					EMemory::Memmov(RawDataPtr, Data(), HeapSize);
+					RawDataPtr = &(RawDataPtr[HeapSize]);
+				}
+				EMemory::Memmov(RawDataPtr, Other.Data(), Other.HeapSize);
+				HeapPtr = EMemory::Move(Other.HeapPtr);
+				HeapSize = EMemory::Move(Other.HeapSize);
+			}
+		}
 		PE_INLINE void Copy(const THeapBase& Other)
 		{
 			if ((Other.HeapSize > (_TSizeType)0))
