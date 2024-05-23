@@ -10,8 +10,75 @@
 #include <array>
 #include "../../../../../Development/Alert/DevelopmentDefines.h"
 
+#include "Base/Memory/Memory.h"
+
 namespace PigeonEngine
 {
+
+#if 0
+
+    template <typename _T, typename _TSizeType = INT32, _TSizeType _AllocateSize = (sizeof(_T) * (_TSizeType)8)>
+    class TArray final
+    {
+    public:
+        ~TArray()
+        {
+
+        }
+        TArray()noexcept
+            : ElementNum((_TSizeType)0), Data(_AllocateSize)
+        {
+        }
+        TArray(_TSizeType InElementNum)noexcept
+        {
+            ElementNum = (InElementNum > (_TSizeType)0) ? InElementNum : ((_TSizeType)0);
+            if (ElementNum > (_TSizeType)0)
+            {
+                Data.Allocate(sizeof(_T) * ElementNum);
+                _T RawData = (_T*)(Data.Data());
+                for (_TSizeType i = (_TSizeType)0; i < ElementNum; i++)
+                {
+
+                }
+            }
+        }
+        TArray(TInitializerList InInitList)noexcept
+        {
+
+        }
+        TArray(const TArray& Other)noexcept
+        {
+
+        }
+        TArray(TArray&& Other)noexcept
+        {
+
+        }
+        TArray& operator=(const TArray& Other)noexcept
+        {
+
+            return (*this);
+        }
+        TArray& operator=(TArray&& Other)noexcept
+        {
+
+            return (*this);
+        }
+    private:
+        void AllocateInternal(_TSizeType InElementNum)
+        {
+
+        }
+        void EmptyInternal(_TSizeType InElementNum = (_TSizeType)0)
+        {
+
+        }
+    private:
+        _TSizeType              ElementNum;
+        THeapBase<_TSizeType>   Data;
+    };
+
+#else
 
     // -------------------   Declarations   -----------------------------
     template <typename T>
@@ -368,5 +435,7 @@ namespace PigeonEngine
              this->Elements.reserve(NewCapacity);
          }
     }
+
+#endif
 
 };

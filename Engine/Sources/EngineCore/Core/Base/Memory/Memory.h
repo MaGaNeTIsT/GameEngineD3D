@@ -4,13 +4,19 @@
 #include "../DataStructure/BuiltInType.h"
 #include <Config/ErrorCaption.h>
 #include "../../../../Development/Alert/DevelopmentDefines.h"
+#include "Base/Math/Math.h"
+#include <functional>
 #include <memory>
 
 namespace PigeonEngine
 {
 
+#if 0
+
 	template<typename _TResult, typename... _TArguments>
-	using TFunction = std::function<_TResult(_TArguments...)>;
+	using TFunction = std::function<_TResult (_TArguments...)>;
+	template<typename _T>
+	using TRemoveRef = std::remove_reference_t<_T>;
 
 	template<typename _T>
 	using TUniquePtr = std::unique_ptr<_T>;
@@ -18,6 +24,8 @@ namespace PigeonEngine
 	using TSharedPtr = std::shared_ptr<_T>;
 	template<typename _T>
 	using TWeakPtr = std::weak_ptr<_T>;
+	template<typename _T>
+	using TInitializerList = std::initializer_list<_T>;
 
 	class EMemory final
 	{
@@ -27,37 +35,37 @@ namespace PigeonEngine
 		PE_INLINE static void Memmov(void* Dst, void const* Src, UINT32 Size);
 	public:
 		template<typename _T>
-		PE_INLINE PE_STATIC_CONSTEXPR std::remove_reference_t<_T>&& Move(_T&& _In)noexcept
+		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TRemoveRef<_T>&& Move(_T&& _In)noexcept
 		{
 			return std::move<_T>(_In);
 		}
 
 		template<typename _T>
-		PE_INLINE PE_STATIC_CONSTEXPR _T&& Forward(std::remove_reference_t<_T>&& _In) noexcept
+		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR _T&& Forward(TRemoveRef<_T>&& _In) noexcept
 		{
 			return std::forward<_T>(_In);
 		}
 
 		template<class _T, class... _TArguments>
-		PE_INLINE static TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
+		PE_INLINE PE_NODISCARD static TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
 		{
 			return std::make_unique(_InArguments);
 		}
 
 		template<class _T, class... _TArguments>
-		PE_INLINE PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
+		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
 		{
 			return std::make_unique(_InArguments);
 		}
 
 		template<class _T, typename _TSizeType = INT32>
-		PE_INLINE static TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
+		PE_INLINE PE_NODISCARD static TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
 		{
 			return std::make_unique<_T>(_InSize);
 		}
 
 		template<class _T, typename _TSizeType = INT32>
-		PE_INLINE PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
+		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
 		{
 			return std::make_unique<_T>(_InSize);
 		}
@@ -100,7 +108,7 @@ namespace PigeonEngine
 		}
 		PE_INLINE void Append(const THeapBase& Other)
 		{
-			if ((Other.HeapSize > (_TSizeType)0))
+			if (Other.HeapSize > (_TSizeType)0)
 			{
 				_TSizeType NewSize = Other.HeapSize + HeapSize;
 				TUniquePtr<UINT8[]> NewHeapPtr = EMemory::MakeUnique<UINT8[]>(NewSize);
@@ -111,13 +119,13 @@ namespace PigeonEngine
 					RawDataPtr = &(RawDataPtr[HeapSize]);
 				}
 				EMemory::Memcpy(RawDataPtr, Other.Data(), Other.HeapSize);
-				HeapPtr = EMemory::Move(Other.HeapPtr);
-				HeapSize = EMemory::Move(Other.HeapSize);
+				HeapPtr = EMemory::Move(NewHeapPtr);
+				HeapSize = EMemory::Move(NewSize);
 			}
 		}
 		PE_INLINE void Append(THeapBase&& Other)
 		{
-			if ((Other.HeapSize > (_TSizeType)0))
+			if (Other.HeapSize > (_TSizeType)0)
 			{
 				_TSizeType NewSize = Other.HeapSize + HeapSize;
 				TUniquePtr<UINT8[]> NewHeapPtr = EMemory::MakeUnique<UINT8[]>(NewSize);
@@ -128,8 +136,39 @@ namespace PigeonEngine
 					RawDataPtr = &(RawDataPtr[HeapSize]);
 				}
 				EMemory::Memmov(RawDataPtr, Other.Data(), Other.HeapSize);
-				HeapPtr = EMemory::Move(Other.HeapPtr);
-				HeapSize = EMemory::Move(Other.HeapSize);
+				HeapPtr = EMemory::Move(NewHeapPtr);
+				HeapSize = EMemory::Move(NewSize);
+			}
+		}
+		PE_INLINE void Append(_TSizeType InExtentSize)
+		{
+			if (InExtentSize > (_TSizeType)0)
+			{
+				_TSizeType NewSize = InExtentSize + HeapSize;
+				TUniquePtr<UINT8[]> NewHeapPtr = EMemory::MakeUnique<UINT8[]>(NewSize);
+				if (HeapSize > (_TSizeType)0)
+				{
+					UINT8* RawDataPtr = NewHeapPtr.get();
+					EMemory::Memmov(RawDataPtr, Data(), HeapSize);
+				}
+				HeapPtr = EMemory::Move(NewHeapPtr);
+				HeapSize = EMemory::Move(NewSize);
+			}
+		}
+		PE_INLINE void Substract(_TSizeType InExtentSize)
+		{
+			if (InExtentSize > (_TSizeType)0)
+			{
+				_TSizeType RestSize = HeapSize >= InExtentSize ? (HeapSize - InExtentSize) : (_TSizeType)0;
+				TUniquePtr<UINT8[]> NewHeapPtr = nullptr;
+				if (RestSize > (_TSizeType)0)
+				{
+					NewHeapPtr = EMemory::MakeUnique<UINT8[]>(RestSize);
+					UINT8* RawDataPtr = NewHeapPtr.get();
+					EMemory::Memmov(RawDataPtr, Data(), RestSize);
+				}
+				HeapPtr = NewHeapPtr ? EMemory::Move(NewHeapPtr) : nullptr;
+				HeapSize = EMemory::Move(RestSize);
 			}
 		}
 		PE_INLINE void Copy(const THeapBase& Other)
@@ -143,44 +182,44 @@ namespace PigeonEngine
 				EMemory::Memcpy(Data(), Other.Data(), Other.HeapSize);
 			}
 		}
-		void* Data()
+		PE_INLINE void* Data()
 		{
 			return ((void*)(HeapPtr.get()));
 		}
-		const void* Data()const
+		PE_INLINE const void* Data()const
 		{
 			return ((const void*)(HeapPtr.get()));
 		}
-		_TSizeType Size()const
+		PE_INLINE _TSizeType Size()const
 		{
 			return HeapSize;
 		}
 	public:
-		THeapBase()noexcept
-			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
-		{
-		}
-		THeapBase(_TSizeType InInitSize)noexcept
-			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
-		{
-			Allocate(InInitSize);
-		}
 		~THeapBase()
 		{
 			Release();
 		}
-		THeapBase(const THeapBase& Other)noexcept
+		PE_INLINE THeapBase()noexcept
+			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
+		{
+		}
+		PE_INLINE THeapBase(_TSizeType InInitSize)noexcept
+			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
+		{
+			Allocate(InInitSize);
+		}
+		PE_INLINE THeapBase(const THeapBase& Other)noexcept
 			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
 		{
 			Copy(Other);
 		}
-		THeapBase(THeapBase&& Other)noexcept
+		PE_INLINE THeapBase(THeapBase&& Other)noexcept
 			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
 		{
 			HeapPtr = EMemory::Move(Other.HeapPtr);
 			HeapSize = EMemory::Move(Other.HeapSize);
 		}
-		THeapBase& operator=(const THeapBase& Other)noexcept
+		PE_INLINE THeapBase& operator=(const THeapBase& Other)noexcept
 		{
 			Release();
 			if (Other.HeapSize > (_TSizeType)0)
@@ -189,7 +228,7 @@ namespace PigeonEngine
 				Copy(Other);
 			}
 		}
-		THeapBase& operator=(THeapBase&& Other)noexcept
+		PE_INLINE THeapBase& operator=(THeapBase&& Other)noexcept
 		{
 			Release();
 			if (Other.HeapSize > (_TSizeType)0)
@@ -202,5 +241,7 @@ namespace PigeonEngine
 		TUniquePtr<UINT8[]>	HeapPtr;
 		_TSizeType			HeapSize;
 	};
+
+#endif
 
 };

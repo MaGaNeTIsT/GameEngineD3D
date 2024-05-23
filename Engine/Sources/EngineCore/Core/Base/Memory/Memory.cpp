@@ -3,6 +3,8 @@
 namespace PigeonEngine
 {
 
+#if 0
+
 	PE_INLINE void EMemory::Memcpy(void* Dst, void const* Src, UINT32 Size)
 	{
 		std::memcpy(Dst, Src, Size);
@@ -15,5 +17,7 @@ namespace PigeonEngine
 	{
 		std::memmove(Dst, Src, Size);
 	}
+
+#endif
 
 };
