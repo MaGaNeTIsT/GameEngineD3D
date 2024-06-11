@@ -33,20 +33,42 @@ A game engine for Windows
 
 ## Engine System
 
+### Asset System
+Asset System :\
+  Texture Asset(Texture2D Texture3D TextureCube PNG JPEG... -> PAsset)\
+  Mesh Asset(FBX OBJ... -> PAsset)\
+  Skeleton Asset(FBX... -> PAsset)\
+  Animation Asset(FBX... -> PAsset)\
+  Shader Asset(HLSL CSO... -> PAsset)
+
 ### Actor System
-TODO
+Actor Component System :\
+  Camera View\
+  Light\
+  Sky\
+  Primitive
 
 ### Physic System
-TODO
+JoltPhysic :\
+  Body\
+  ConvexComponent(Shape Constrain)
 
 ### Render System
-TODO
+RenderScene :\
+  ViewProxy(Culling)\
+  LightProxy(Culling)\
+  PrimitiveProxy\
+  StaticMeshProxy\
+  SkeletonMeshProxy\
+Deferred Rendering :
+  PBR GBuffer(GBufferA GBufferB GBufferC)
 
 #### Material System
 TODO
 
 #### Render Features
-TODO
+HiZCulling
+GTAO
 
 ## NOTE
 Name of skeleton's bone can not large than 512 bytes(char[512]), because we use char[512] for serialization / deserialization
