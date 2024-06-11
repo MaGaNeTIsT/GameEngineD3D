@@ -3,7 +3,7 @@
 namespace PigeonEngine
 {
 
-#if 0
+#if 1
 
 	PE_INLINE void EMemory::Memcpy(void* Dst, void const* Src, UINT32 Size)
 	{

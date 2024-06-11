@@ -125,7 +125,7 @@ namespace PigeonEngine
         TSet<PSceneComponent*> ChildrenComponents;
 
     public:
-        TSharedPtr<CJsonObject> Serialize() override;
+        virtual TSharedPtr<CJsonObject> Serialize() override;
 
     public:
         // children components wil NOT be involved

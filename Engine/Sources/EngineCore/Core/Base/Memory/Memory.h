@@ -11,64 +11,87 @@
 namespace PigeonEngine
 {
 
-#if 0
+#if 1
 
-	template<typename _TResult, typename... _TArguments>
-	using TFunction = std::function<_TResult (_TArguments...)>;
-	template<typename _T>
-	using TRemoveRef = std::remove_reference_t<_T>;
+#define SMART_PTR_GET(__PtrType) \
+	template<typename _Ty>\
+	static PE_INLINE PE_NODISCARD _Ty* GetPtr(__PtrType<_Ty>&& _In)\
+	{\
+		return (_In.get());\
+	}\
+	template<typename _Ty>\
+	static PE_INLINE PE_NODISCARD _Ty* GetPtr(__PtrType<_Ty>& _In)\
+	{\
+		return (_In.get());\
+	}\
+	template<typename _Ty>\
+	static PE_INLINE PE_NODISCARD const _Ty* GetPtr(const __PtrType<_Ty>& _In)\
+	{\
+		return (_In.get());\
+	}\
 
-	template<typename _T>
-	using TUniquePtr = std::unique_ptr<_T>;
-	template<typename _T>
-	using TSharedPtr = std::shared_ptr<_T>;
-	template<typename _T>
-	using TWeakPtr = std::weak_ptr<_T>;
-	template<typename _T>
-	using TInitializerList = std::initializer_list<_T>;
+
+	//template<typename _TResult, typename... _TArguments>
+	//using TFunction = std::function<_TResult(_TArguments...)>;
+
+	template<typename _Ty>
+	using TRemoveRef = std::remove_reference_t<_Ty>;
+
+	template<typename _Ty>
+	using TUniquePtr = std::unique_ptr<_Ty>;
+	template<typename _Ty>
+	using TSharedPtr = std::shared_ptr<_Ty>;
+	template<typename _Ty>
+	using TWeakPtr = std::weak_ptr<_Ty>;
+	template<typename _Ty>
+	using TInitializerList = std::initializer_list<_Ty>;
 
 	class EMemory final
 	{
 	public:
-		PE_INLINE static void Memcpy(void* Dst, void const* Src, UINT32 Size);
-		PE_INLINE static void Memset(void* Dst, UINT8 Val, UINT32 Size);
-		PE_INLINE static void Memmov(void* Dst, void const* Src, UINT32 Size);
+		static PE_INLINE void Memcpy(void* Dst, void const* Src, UINT32 Size);
+		static PE_INLINE void Memset(void* Dst, UINT8 Val, UINT32 Size);
+		static PE_INLINE void Memmov(void* Dst, void const* Src, UINT32 Size);
 	public:
-		template<typename _T>
-		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TRemoveRef<_T>&& Move(_T&& _In)noexcept
+		template <typename _Ty>
+		static PE_INLINE PE_NODISCARD constexpr TRemoveRef<_Ty>&& Move(_Ty&& _In)noexcept
 		{
-			return std::move<_T>(_In);
+			return std::move<_Ty>(_In);
 		}
 
-		template<typename _T>
-		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR _T&& Forward(TRemoveRef<_T>&& _In) noexcept
+		template <typename _Ty>
+		static PE_INLINE PE_NODISCARD constexpr _Ty&& Forward(TRemoveRef<_Ty>& _In)noexcept
 		{
-			return std::forward<_T>(_In);
+			return std::forward<_Ty>(_In);
 		}
 
-		template<class _T, class... _TArguments>
-		PE_INLINE PE_NODISCARD static TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
+		template <typename _Ty>
+		static PE_INLINE PE_NODISCARD constexpr _Ty&& Forward(TRemoveRef<_Ty>&& _In)noexcept
 		{
-			return std::make_unique(_InArguments);
+			return std::forward<_Ty>(_In);
 		}
 
-		template<class _T, class... _TArguments>
-		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TArguments&&... _InArguments)
+		template <typename _Ty, typename... _TArguments>
+		static PE_NODISCARD PE_INLINE TUniquePtr<_Ty> MakeUnique(_TArguments&&... _InArgs)
 		{
-			return std::make_unique(_InArguments);
+			return std::make_unique<_Ty, _TArguments...>(std::forward<_TArguments>(_InArgs)...);
 		}
 
-		template<class _T, typename _TSizeType = INT32>
-		PE_INLINE PE_NODISCARD static TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
+		template <typename _Ty, typename _TSizeType = INT32>
+		static PE_NODISCARD PE_INLINE TUniquePtr<_Ty> MakeUnique(const _TSizeType _InSize)
 		{
-			return std::make_unique<_T>(_InSize);
+			return std::make_unique<_Ty>(_InSize);
 		}
 
-		template<class _T, typename _TSizeType = INT32>
-		PE_INLINE PE_NODISCARD PE_STATIC_CONSTEXPR TUniquePtr<_T> MakeUnique(_TSizeType _InSize)
+		template <typename _Ty, typename... _TArguments>
+		static PE_INLINE PE_NODISCARD TSharedPtr<_Ty> MakeShared(_TArguments&&... _InArgs)
 		{
-			return std::make_unique<_T>(_InSize);
+			return std::make_shared<_Ty, _TArguments...>(std::forward<_TArguments>(_InArgs)...);
 		}
+
+		SMART_PTR_GET(TUniquePtr)
+		SMART_PTR_GET(TSharedPtr)
+		SMART_PTR_GET(TWeakPtr)
 	private:
 		EMemory()noexcept {}
 		EMemory(const EMemory&)noexcept {}

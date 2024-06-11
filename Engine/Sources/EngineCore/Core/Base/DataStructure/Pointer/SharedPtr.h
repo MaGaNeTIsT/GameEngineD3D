@@ -7,6 +7,9 @@
 
 namespace PigeonEngine
 {
+
+#if 0
+
     template <typename T>
     class TSharedPtr
     {
@@ -147,4 +150,7 @@ namespace PigeonEngine
     {
         return TSharedPtr<T>(std::make_shared<T>(Args...));
     }
+
+#endif
+
 }

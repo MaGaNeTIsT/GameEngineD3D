@@ -1,7 +1,5 @@
 #pragma once
 
-#include <set>
-
 #include <CoreMinimal.h>
 #include "Base/DataStructure/Container/Set.h"
 #include "Object.h"

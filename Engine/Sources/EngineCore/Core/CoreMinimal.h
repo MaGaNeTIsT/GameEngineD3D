@@ -11,6 +11,8 @@
 #include <Base/DataStructure/BaseType.h>
 #include <Base/Math/Math.h>
 
+#include <Base/Delegate/Function.h>
+#include <Base/Memory/Memory.h>
 #include <Base/DataStructure/Container/Array.h>
 #include <Base/DataStructure/Container/HashMap.h>
 #include <Base/DataStructure/Container/Map.h>

@@ -5,6 +5,9 @@
 
 namespace PigeonEngine
 {
+
+#if 1
+
     // use std::function for now.
     template <typename FuncType>
     class TFunction;
@@ -70,6 +73,8 @@ namespace PigeonEngine
     {
         return this->Operation == Other.Operation;
     }
+
+#endif
 
     // // examples
     // 1, for a normal function,

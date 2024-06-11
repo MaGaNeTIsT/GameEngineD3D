@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Input/InputType.h"
+#include "PigeonBase/Object/Object.h"
 #include "PigeonBase/Object/Actor.h"
 namespace PigeonEngine
 {

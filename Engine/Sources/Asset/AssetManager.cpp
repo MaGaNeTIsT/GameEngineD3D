@@ -100,11 +100,13 @@ namespace PigeonEngine
 
 	void EFolderTreeNode::SetChildrenFolder(const TArray<EString>& Paths)
 	{
+#if 0	// Need fix [this -> TSharedPtr]
 		ChildrenFolder.Clear();
 		for(const auto& elem : Paths)
 		{
-			ChildrenFolder.Add(TSharedPtr<EFolderTreeNode>::MakeShared(this, elem));
+			ChildrenFolder.Add(EMemory::MakeShared<EFolderTreeNode>(this, elem));
 		}
+#endif
 	}
 	
 	void EFolderTreeNode::SetChildrenFiles(const TArray<EString>& Paths)
@@ -114,7 +116,7 @@ namespace PigeonEngine
 		{
 			if(elem.Contains(".PAsset"))
 			{
-				ChildrenFile.Add(TSharedPtr<EAssetFile>::MakeShared(elem));
+				ChildrenFile.Add(EMemory::MakeShared<EAssetFile>(elem));
 			}
 		}
 	}
@@ -203,8 +205,8 @@ namespace PigeonEngine
 	
 	void EAssetManager::EditorInit()
 	{
-		EngineAssetRoot  = TSharedPtr<EFolderTreeNode>::MakeShared(nullptr, EBaseSettings::ENGINE_CONTENT_PATH);
-		ProjectAssetRoot = TSharedPtr<EFolderTreeNode>::MakeShared(nullptr, EEngineSettings::PROJECT_CONTENT_PATH);
+		EngineAssetRoot  = EMemory::MakeShared<EFolderTreeNode>(nullptr, EBaseSettings::ENGINE_CONTENT_PATH);
+		ProjectAssetRoot = EMemory::MakeShared<EFolderTreeNode>(nullptr, EEngineSettings::PROJECT_CONTENT_PATH);
 		if(!ScanFolder(EngineAssetRoot))
 		{
 			EngineAssetRoot = nullptr;
@@ -343,7 +345,7 @@ namespace PigeonEngine
 			ImGui::SameLine();
 			{
 				ImGui::BeginChild("Content", ImVec2(700, 0), TRUE);
-				if(Current.Get())
+				if (EMemory::GetPtr(Current))
 				{
 					ImVec2 button_sz(100, 100);
 					auto ChildrenFolder = Current->GetChildrenFolder();

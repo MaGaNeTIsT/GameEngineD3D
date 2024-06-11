@@ -39,7 +39,7 @@ namespace PigeonEngine
 
 	TSharedPtr<CJsonObject> PObject::Serialize()
 	{
-		auto Json = TSharedPtr<CJsonObject>::MakeShared();
+		auto Json = EMemory::MakeShared<CJsonObject>();
 		Json->SetUInt64Field("TypeHash", this->GetTypeHash());
 #if _EDITOR_ONLY
 		Json->SetStringField("Name", this->GetDebugName());

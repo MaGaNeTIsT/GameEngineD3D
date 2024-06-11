@@ -3,8 +3,6 @@
 #include <CoreMinimal.h>
 
 
-#include "Base/DataStructure/Pointer/SharedPtr.h"
-
 namespace PigeonEngine
 {
 	class CJsonObject;

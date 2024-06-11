@@ -1,5 +1,7 @@
 ﻿#pragma once
+
 #include "Function.h"
+#include "Base/Memory/Memory.h"
 #include "Base/DataStructure/Container/Array.h"
 
 
@@ -20,13 +22,13 @@ namespace PigeonEngine
     class TDelegateBroadcast;
     // Delegate no return, multi execution
     template <typename... Args>
-    class TDelegateBroadcast<void(Args...)> : public TDelegate<void(Args...)>
+    class TDelegateBroadcast<void (Args...)> : public TDelegate<void(Args...)>
     {
     public:
         ~TDelegateBroadcast<void(Args...)>() { RemoveAll(); }
     public:
-        void Add(const TFunction<void(Args...)>& New);
-        void Remove(const TFunction<void(Args...)>& Old);
+        void Add(const TFunction<void (Args...)>& New);
+        void Remove(const TFunction<void (Args...)>& Old);
         void RemoveAll();
         void Broadcast(Args... Arguments);
     private:

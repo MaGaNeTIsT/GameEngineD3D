@@ -86,7 +86,7 @@ namespace PigeonEngine
 		TSharedPtr<CJsonObject> JsonObj =  PActorComponent::Serialize();
 		
 		TSharedPtr<CJsonObject> TransFormJson = ESerializationHelper::SerializeTransform(Transform);
-		JsonObj->SetObjectField("Transform", TransFormJson.Get());
+		JsonObj->SetObjectField("Transform", EMemory::GetPtr(TransFormJson));
 		return JsonObj;
 	}
 

@@ -99,8 +99,8 @@ namespace PigeonEngine
 
     void EEditorLogManager::AddALog(ELogType Type, const EString& NewLog)
     {
-       // TSharedPtr<ELogType> NewLog = TSharedPtr<ELogType>::MakeShared(Type, NewLog);
-        this->Logs.Add(TSharedPtr<ELog>::MakeShared(Type, NewLog, EngineSystemTime::Now()));
+       // TSharedPtr<ELogType> NewLog = EMemory::MakeShared<ELogType>(Type, NewLog);
+        this->Logs.Add(EMemory::MakeShared<ELog>(Type, NewLog, EngineSystemTime::Now()));
     }
 
     void EEditorLogManager::WriteDownLogs()
