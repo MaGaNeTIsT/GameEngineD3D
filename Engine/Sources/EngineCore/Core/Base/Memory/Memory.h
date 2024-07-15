@@ -107,11 +107,15 @@ namespace PigeonEngine
 		}
 	};
 
-	template<typename _TSizeType = INT32>
+	template<typename _TSizeType = INT32, _TSizeType _AllocateSize = (_TSizeType)8>
 	class THeapBase final
 	{
 	public:
-		PE_INLINE void Allocate(_TSizeType InSize)
+		PE_INLINE void Growth()
+		{
+			Append(_AllocateSize);
+		}
+		PE_INLINE void Reallocate(_TSizeType InSize)
 		{
 			if (HeapSize == InSize)
 			{
@@ -200,7 +204,7 @@ namespace PigeonEngine
 			{
 				if (HeapSize < Other.HeapSize)
 				{
-					Allocate(Other.HeapSize);
+					Reallocate(Other.HeapSize);
 				}
 				EMemory::Memcpy(Data(), Other.Data(), Other.HeapSize);
 			}
@@ -225,11 +229,12 @@ namespace PigeonEngine
 		PE_INLINE THeapBase()noexcept
 			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
 		{
+			Reallocate(_AllocateSize);
 		}
 		PE_INLINE THeapBase(_TSizeType InInitSize)noexcept
 			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
 		{
-			Allocate(InInitSize);
+			Reallocate(InInitSize);
 		}
 		PE_INLINE THeapBase(const THeapBase& Other)noexcept
 			: HeapPtr(nullptr), HeapSize((_TSizeType)0)
@@ -247,7 +252,7 @@ namespace PigeonEngine
 			Release();
 			if (Other.HeapSize > (_TSizeType)0)
 			{
-				Allocate(Other.HeapSize);
+				Reallocate(Other.HeapSize);
 				Copy(Other);
 			}
 		}
@@ -264,6 +269,87 @@ namespace PigeonEngine
 		TUniquePtr<UINT8[]>	HeapPtr;
 		_TSizeType			HeapSize;
 	};
+
+	template<typename _Ty, typename _TSizeType, _TSizeType _AllocateSize>
+	class TAllocatorBase
+	{
+	public:
+		using THeapType = THeapBase<_TSizeType, sizeof(_Ty)* _AllocateSize>;
+	public:
+		PE_INLINE void Growth()
+		{
+			Heap.Growth();
+		}
+		PE_INLINE void Reallocate(_TSizeType InSize)
+		{
+			Heap.Reallocate(InSize);
+		}
+		PE_INLINE void Release()
+		{
+			Heap.Release();
+		}
+		PE_INLINE void Append(const TAllocatorBase& Other)
+		{
+			Heap.Append(Other.Heap);
+		}
+		PE_INLINE void Append(TAllocatorBase&& Other)
+		{
+			Heap.Append(EMemory::Forward<THeapType>(Other.Heap));
+		}
+		PE_INLINE void Append(_TSizeType InExtentSize)
+		{
+			Heap.Append(InExtentSize);
+		}
+		PE_INLINE void Substract(_TSizeType InExtentSize)
+		{
+			Heap.Substract(InExtentSize);
+		}
+		PE_INLINE void CopyFrom(const TAllocatorBase& Other)
+		{
+			Heap.Copy(Other.Heap);
+		}
+		PE_INLINE void MoveFrom(TAllocatorBase&& Other)
+		{
+			Release();
+			if (Other.HeapSize() > (_TSizeType)0)
+			{
+				Heap = EMemory::Move(Other.Heap);
+			}
+		}
+		PE_INLINE _Ty* HeapData()
+		{
+			return ((_Ty*)(Heap.Data()));
+		}
+		PE_INLINE const _Ty* HeapData()const
+		{
+			return ((const _Ty*)(Heap.Data()));
+		}
+		PE_INLINE _TSizeType HeapSize()const
+		{
+			return Heap.Size();
+		}
+	public:
+		virtual ~TAllocatorBase()
+		{
+			Release();
+		}
+		PE_INLINE TAllocatorBase()noexcept
+		{
+		}
+		PE_INLINE TAllocatorBase(_TSizeType InInitSize)noexcept
+			: Heap(InInitSize)
+		{
+		}
+		PE_INLINE TAllocatorBase(const TAllocatorBase& Other)noexcept = delete;
+		PE_INLINE TAllocatorBase(TAllocatorBase&& Other)noexcept = delete;
+		PE_INLINE TAllocatorBase& operator=(const TAllocatorBase& Other)noexcept = delete;
+		PE_INLINE TAllocatorBase& operator=(TAllocatorBase&& Other)noexcept = delete;
+	private:
+		THeapType Heap;
+	};
+
+	template<typename _Ty, typename _TSizeType = INT32, _TSizeType _DefaultAllocateSize = (_TSizeType)8>
+	using TDefaultAllocator = TAllocatorBase<_Ty, _TSizeType, _DefaultAllocateSize>;
 
 #endif
 
