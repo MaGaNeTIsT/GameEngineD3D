@@ -21,65 +21,256 @@ namespace PigeonEngine
     class TArray final
     {
     public:
-        ~TArray()
+        _TSizeType Add(const _Ty& InElement)
+        {
+            PushInternal(InElement);
+            Check((ElementNum > (_TSizeType)0));
+            return (ElementNum - (_TSizeType)1);
+        }
+        _TSizeType Add(_Ty&& InElement)
+        {
+            PushInternal(EMemory::Forward<_Ty>(InElement));
+            Check((ElementNum > (_TSizeType)0));
+            return (ElementNum - (_TSizeType)1);
+        }
+        _Ty& operator[](_TSizeType InIndex)
+        {
+            Check(((InIndex >= (_TSizeType)0) && (InIndex < ElementNum)));
+            return (Allocator.HeapData()[InIndex]);
+        }
+        const _Ty& operator[](_TSizeType InIndex)const
+        {
+            Check(((InIndex >= (_TSizeType)0) && (InIndex < ElementNum)));
+            return (Allocator.HeapData()[InIndex]);
+        }
+        _Ty& AddDefaultGetRef()
+        {
+            return PushDefaultInternal();
+        }
+        _Ty& GetRef(_TSizeType InIndex)
+        {
+            Check(((InIndex >= (_TSizeType)0) && (InIndex < ElementNum)));
+            return (Allocator.HeapData()[InIndex]);
+        }
+        const _Ty& Get(_TSizeType InIndex)const
+        {
+            Check(((InIndex >= (_TSizeType)0) && (InIndex < ElementNum)));
+            return (Allocator.HeapData()[InIndex]);
+        }
+        _Ty& First()
+        {
+        }
+        const _Ty& First()const
         {
 
+        }
+        _Ty& Last()
+        {
+
+        }
+        const _Ty& Last()const
+        {
+
+        }
+        _TSizeType Find(const _Ty& InElement) const
+        {
+
+        }
+        BOOL32 Contains(const T& Element) const;
+        void Resize(const UINT32& NewSize);
+        void Recapacity(const UINT32& NewCapacity);
+        void RemoveAt(const UINT32& Index);
+        void Remove(const T& Element);
+        void Pop();
+        void Clear();
+
+        T* RawData();
+        const T* RawData() const;
+
+        void Append(const TArray<T>& Other);
+
+        void       Sort();
+        void       Sort(BOOL32 Predicate(const T&, const T&));
+        void       Shuffle();
+        TArray<T>  Reverse() const;
+
+    public:
+        ~TArray()
+        {
+            EmptyInternal();
         }
         TArray()noexcept
             : ElementNum((_TSizeType)0)
         {
         }
         TArray(_TSizeType InElementNum)noexcept
+            : ElementNum((_TSizeType)0)
         {
-
+            AppendElementInternal(InElementNum);
         }
-        TArray(TInitializerList InInitList)noexcept
+        TArray(TInitializerList<_Ty> InInitList)noexcept
+            : ElementNum((_TSizeType)0)
         {
-
+            const _TSizeType NumList = InitializerListSize<_Ty, _TSizeType>(InInitList);
+            if (NumList > (_TSizeType)0)
+            {
+                AppendCapacityInternal(NumList);
+                const _Ty* ListBegin = InitializerListBegin<_Ty>(InInitList);
+                for (_TSizeType i = (_TSizeType)0; i < NumList; i++)
+                {
+                    PushInternal(ListBegin[i]);
+                }
+            }
         }
         TArray(const TArray& Other)noexcept
+            : ElementNum((_TSizeType)0)
         {
-
+            CopyFromInternal(Other);
         }
         TArray(TArray&& Other)noexcept
+            : ElementNum((_TSizeType)0)
         {
-
+            MoveFromInternal(EMemory::Forward<TArray>(Other));
         }
         TArray& operator=(const TArray& Other)noexcept
         {
-
+            CopyFrom(Other);
             return (*this);
         }
         TArray& operator=(TArray&& Other)noexcept
         {
-
+            MoveFrom(EMemory::Forward<TArray>(Other));
             return (*this);
         }
     public:
+        void CopyFrom(const TArray& Other)
+        {
+            EmptyInternal();
+            CopyFromInternal(Other);
+        }
+        void MoveFrom(TArray&& Other)
+        {
+            EmptyInternal();
+            MoveFromInternal(EMemory::Forward<TArray>(Other));
+        }
         _TSizeType Num() const { return ElementNum; }
         _TSizeType AllocateSize() const { return (Allocator.HeapSize()); }
-    private:
-        void AppendInternal(_TSizeType InElementNum)
+        _TSizeType Capacity() const
         {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            return (Allocator.HeapSize() / TypeSize);
+        }
+    private:
+        void CopyFromInternal(const TArray& Other)
+        {
+            const _TSizeType NumOther = Other.Num();
+            if (NumOther > (_TSizeType)0)
+            {
+                AppendCapacityInternal(NumOther);
+                for (_TSizeType i = (_TSizeType)0; i < NumList; i++)
+                {
+                    PushInternal(Other[i]);
+                }
+            }
+        }
+        void MoveFromInternal(TArray&& Other)
+        {
+            const _TSizeType NumOther = Other.Num();
+            if (NumOther > (_TSizeType)0)
+            {
+                AppendCapacityInternal(NumOther);
+                for (_TSizeType i = (_TSizeType)0; i < NumList; i++)
+                {
+                    PushInternal(EMemory::Move<_Ty>(Other[i]));
+                }
+            }
+        }
+        void AppendCapacityInternal(_TSizeType InElementNum)
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
             if (InElementNum == (_TSizeType)0)
             {
                 return;
             }
-            _TSizeType NewAppendSize = InElementNum * sizeof(_Ty);
+            _TSizeType NewAppendSize = InElementNum * TypeSize;
             Allocator.Append(NewAppendSize);
+        }
+        void AppendElementInternal(_TSizeType InElementNum)
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            if (InElementNum == (_TSizeType)0)
+            {
+                return;
+            }
+            AppendCapacityInternal(InElementNum);
+            for (_TSizeType i = (_TSizeType)0; i < InElementNum; i++)
+            {
+                _Ty* NewItem = new (&(Allocator.HeapData()[ElementNum + i]))_Ty();
+            }
             ElementNum = ElementNum + InElementNum;
         }
         void EmptyInternal(_TSizeType InElementNum = (_TSizeType)0)
         {
-            _Ty* HeadPtr = Allocator.HeapData();
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
             for (_TSizeType i = (_TSizeType)0; i < ElementNum; i++)
             {
-                (HeadPtr[i]).~_Ty();
+                (Allocator.HeapData()[i]).~_Ty();
             }
             ElementNum = (_TSizeType)0;
             if (InElementNum > (_TSizeType)0)
             {
-                Allocator.Reallocate(InElementNum * sizeof(_Ty));
+                Allocator.Reallocate(InElementNum * TypeSize);
+            }
+        }
+        _Ty& PushDefaultInternal()
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            if (ElementNum >= Capacity())
+            {
+                Allocator.Growth();
+            }
+            _Ty* NewItem = new (&(Allocator.HeapData()[ElementNum]))_Ty();
+            ElementNum = ElementNum + (_TSizeType)1;
+            return (*NewItem);
+        }
+        void PushInternal(const _Ty& InItem)
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            if (ElementNum >= Capacity())
+            {
+                Allocator.Growth();
+            }
+            _Ty* NewItem = new (&(Allocator.HeapData()[ElementNum]))_Ty(InItem);
+            ElementNum = ElementNum + (_TSizeType)1;
+        }
+        void PushInternal(_Ty&& InItem)
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            if (ElementNum >= Capacity())
+            {
+                Allocator.Growth();
+            }
+            _Ty* NewItem = new (&(Allocator.HeapData()[ElementNum]))_Ty(EMemory::Forward<_Ty>(InItem));
+            ElementNum = ElementNum + (_TSizeType)1;
+        }
+        void PopInternal()
+        {
+            if (ElementNum == (_TSizeType)0)
+            {
+                return;
+            }
+            (Allocator.HeapData()[ElementNum - (_TSizeType)1]).~_Ty();
+            ElementNum = ElementNum - (_TSizeType)1;
+        }
+        void ShrinkInternal()
+        {
+            PE_CONSTEXPR _TSizeType TypeSize = (_TSizeType)(sizeof(_Ty));
+            const _TSizeType RestNum = Capacity() - ElementNum;
+            _TSizeType SubNum = ((RestNum / Allocator.GetAllocateStepSize()) > (_TSizeType)0) ? Allocator.GetAllocateStepSize() : (RestNum % Allocator.GetAllocateStepSize());
+            SubNum = RestNum - SubNum;
+            if (SubNum > (_TSizeType)0)
+            {
+                Allocator.Substract(TypeSize * SubNum);
             }
         }
     private:

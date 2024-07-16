@@ -43,8 +43,25 @@ namespace PigeonEngine
 	using TSharedPtr = std::shared_ptr<_Ty>;
 	template<typename _Ty>
 	using TWeakPtr = std::weak_ptr<_Ty>;
+
 	template<typename _Ty>
 	using TInitializerList = std::initializer_list<_Ty>;
+
+	template <typename _Ty, typename _TSizeType = INT32>
+	PE_NODISCARD PE_CONSTEXPR _TSizeType InitializerListSize(TInitializerList<_Ty> InList)
+	{
+		return ((_TSizeType)(InList.size()));
+	}
+	template<typename _Ty>
+	PE_NODISCARD PE_CONSTEXPR const _Ty* InitializerListBegin(TInitializerList<_Ty> InList)
+	{
+		return (InList.begin());
+	}
+	template<typename _Ty>
+	PE_NODISCARD PE_CONSTEXPR const _Ty* InitializerListEnd(TInitializerList<_Ty> InList)
+	{
+		return (InList.end());
+	}
 
 	class EMemory final
 	{
@@ -54,19 +71,19 @@ namespace PigeonEngine
 		static PE_INLINE void Memmov(void* Dst, void const* Src, UINT32 Size);
 	public:
 		template <typename _Ty>
-		static PE_INLINE PE_NODISCARD constexpr TRemoveRef<_Ty>&& Move(_Ty&& _In)noexcept
+		static PE_INLINE PE_NODISCARD PE_CONSTEXPR TRemoveRef<_Ty>&& Move(_Ty&& _In)noexcept
 		{
 			return std::move<_Ty>(_In);
 		}
 
 		template <typename _Ty>
-		static PE_INLINE PE_NODISCARD constexpr _Ty&& Forward(TRemoveRef<_Ty>& _In)noexcept
+		static PE_INLINE PE_NODISCARD PE_CONSTEXPR _Ty&& Forward(TRemoveRef<_Ty>& _In)noexcept
 		{
 			return std::forward<_Ty>(_In);
 		}
 
 		template <typename _Ty>
-		static PE_INLINE PE_NODISCARD constexpr _Ty&& Forward(TRemoveRef<_Ty>&& _In)noexcept
+		static PE_INLINE PE_NODISCARD PE_CONSTEXPR _Ty&& Forward(TRemoveRef<_Ty>&& _In)noexcept
 		{
 			return std::forward<_Ty>(_In);
 		}
@@ -270,11 +287,11 @@ namespace PigeonEngine
 		_TSizeType			HeapSize;
 	};
 
-	template<typename _Ty, typename _TSizeType, _TSizeType _AllocateSize>
+	template<typename _Ty, typename _TSizeType, _TSizeType _AllocateStepSize>
 	class TAllocatorBase
 	{
 	public:
-		using THeapType = THeapBase<_TSizeType, sizeof(_Ty)* _AllocateSize>;
+		using THeapType = THeapBase<_TSizeType, sizeof(_Ty)* _AllocateStepSize>;
 	public:
 		PE_INLINE void Growth()
 		{
@@ -294,7 +311,7 @@ namespace PigeonEngine
 		}
 		PE_INLINE void Append(TAllocatorBase&& Other)
 		{
-			Heap.Append(EMemory::Forward<THeapType>(Other.Heap));
+			Heap.Append(EMemory::Move<THeapType>(Other.Heap));
 		}
 		PE_INLINE void Append(_TSizeType InExtentSize)
 		{
@@ -328,6 +345,7 @@ namespace PigeonEngine
 		{
 			return Heap.Size();
 		}
+		PE_INLINE PE_CONSTEXPR _TSizeType GetAllocateStepSize() const { return _AllocateStepSize; }
 	public:
 		virtual ~TAllocatorBase()
 		{
