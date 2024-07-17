@@ -59,24 +59,32 @@ namespace PigeonEngine
         }
         _Ty& First()
         {
+            Check((ElementNum > (_TSizeType)0));
+            return (Allocator.HeapData()[0]);
         }
         const _Ty& First()const
         {
-
+            Check((ElementNum > (_TSizeType)0));
+            return (Allocator.HeapData()[0]);
         }
         _Ty& Last()
         {
-
+            Check((ElementNum > (_TSizeType)0));
+            return (Allocator.HeapData()[ElementNum - (_TSizeType)1]);
         }
         const _Ty& Last()const
         {
-
+            Check((ElementNum > (_TSizeType)0));
+            return (Allocator.HeapData()[ElementNum - (_TSizeType)1]);
         }
         _TSizeType Find(const _Ty& InElement) const
         {
 
         }
-        BOOL32 Contains(const T& Element) const;
+        BOOL8 Contains(const _Ty& InElement) const
+        {
+
+        }
         void Resize(const UINT32& NewSize);
         void Recapacity(const UINT32& NewCapacity);
         void RemoveAt(const UINT32& Index);
