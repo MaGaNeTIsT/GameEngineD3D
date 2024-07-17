@@ -28,6 +28,8 @@ namespace PigeonEngine
 	typedef	float						FLOAT;
 	typedef	double						DOUBLE;
 
+#define TEXT(__S)						__S
+
 #ifdef TRUE
 #undef TRUE
 #endif
