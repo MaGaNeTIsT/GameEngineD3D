@@ -47,6 +47,27 @@ namespace PigeonEngine
         {
             return PushDefaultInternal();
         }
+        void SetNum(_TSizeType InElementNum)
+        {
+            if (InElementNum <= ElementNum)
+            {
+                return;
+            }
+            AppendElementInternal(
+        }
+        void Reserve(_TSizeType InElementNum)
+        {
+            const _TSizeType CurrentCapacity = Capacity();
+            if (CurrentCapacity >= InElementNum)
+            {
+                return;
+            }
+            AppendCapacityInternal(InElementNum - CurrentCapacity);
+        }
+        _TSizeType Append(const TArray& Other)
+        {
+
+        }
         _Ty& GetRef(_TSizeType InIndex)
         {
             Check(((InIndex >= (_TSizeType)0) && (InIndex < ElementNum)));
@@ -77,31 +98,63 @@ namespace PigeonEngine
             Check((ElementNum > (_TSizeType)0));
             return (Allocator.HeapData()[ElementNum - (_TSizeType)1]);
         }
-        _TSizeType Find(const _Ty& InElement) const
+        void RemoveAt(_TSizeType InIndex)
         {
 
         }
-        BOOL8 Contains(const _Ty& InElement) const
+        void Remove(const _Ty& InElement)
         {
 
         }
-        void Resize(const UINT32& NewSize);
-        void Recapacity(const UINT32& NewCapacity);
-        void RemoveAt(const UINT32& Index);
-        void Remove(const T& Element);
-        void Pop();
-        void Clear();
+        void Pop()
+        {
 
-        T* RawData();
-        const T* RawData() const;
+        }
+        void Reset()
+        {
 
-        void Append(const TArray<T>& Other);
+        }
+        void Empty(_TSizeType InElementNum = (_TSizeType)0)
+        {
 
-        void       Sort();
-        void       Sort(BOOL32 Predicate(const T&, const T&));
-        void       Shuffle();
-        TArray<T>  Reverse() const;
+        }
+        _TSizeType Find(const _Ty& InElement)const
+        {
 
+        }
+        BOOL8 Contains(const _Ty& InElement)const
+        {
+
+        }
+    public:
+        void Sort()
+        {
+
+        }
+        template<typename _TGreaterFunc>
+        void Sort(_TGreaterFunc&& InGreaterFunc)
+        {
+
+        }
+        template<typename _TGreaterFunc>
+        void Sort(const _TGreaterFunc& InGreaterFunc)
+        {
+
+        }
+        void StableSort()
+        {
+
+        }
+        template<typename _TGreaterFunc>
+        void StableSort(_TGreaterFunc&& InGreaterFunc)
+        {
+
+        }
+        template<typename _TGreaterFunc>
+        void StableSort(const _TGreaterFunc& InGreaterFunc)
+        {
+
+        }
     public:
         ~TArray()
         {
@@ -160,6 +213,14 @@ namespace PigeonEngine
         {
             EmptyInternal();
             MoveFromInternal(EMemory::Forward<TArray>(Other));
+        }
+        _Ty* GetData()
+        {
+
+        }
+        const _Ty* GetData()const
+        {
+
         }
         _TSizeType Num() const { return ElementNum; }
         _TSizeType AllocateSize() const { return (Allocator.HeapSize()); }

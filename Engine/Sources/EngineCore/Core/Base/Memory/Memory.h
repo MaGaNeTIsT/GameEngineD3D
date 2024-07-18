@@ -150,7 +150,8 @@ namespace PigeonEngine
 			HeapPtr = nullptr;
 			HeapSize = (_TSizeType)0;
 		}
-		PE_INLINE void Append(const THeapBase& Other)
+		template<typename _THeap>
+		PE_INLINE void Append(const _THeap& Other)
 		{
 			if (Other.HeapSize > (_TSizeType)0)
 			{
@@ -167,7 +168,8 @@ namespace PigeonEngine
 				HeapSize = EMemory::Move(NewSize);
 			}
 		}
-		PE_INLINE void Append(THeapBase&& Other)
+		template<typename _THeap>
+		PE_INLINE void Append(_THeap&& Other)
 		{
 			if (Other.HeapSize > (_TSizeType)0)
 			{
@@ -215,7 +217,8 @@ namespace PigeonEngine
 				HeapSize = EMemory::Move(RestSize);
 			}
 		}
-		PE_INLINE void Copy(const THeapBase& Other)
+		template<typename _THeap>
+		PE_INLINE void Copy(const _THeap& Other)
 		{
 			if ((Other.HeapSize > (_TSizeType)0))
 			{
@@ -264,7 +267,8 @@ namespace PigeonEngine
 			HeapPtr = EMemory::Move(Other.HeapPtr);
 			HeapSize = EMemory::Move(Other.HeapSize);
 		}
-		PE_INLINE THeapBase& operator=(const THeapBase& Other)noexcept
+		template<typename _THeap>
+		PE_INLINE THeapBase& operator=(const _THeap& Other)noexcept
 		{
 			Release();
 			if (Other.HeapSize > (_TSizeType)0)
@@ -273,7 +277,8 @@ namespace PigeonEngine
 				Copy(Other);
 			}
 		}
-		PE_INLINE THeapBase& operator=(THeapBase&& Other)noexcept
+		template<typename _THeap>
+		PE_INLINE THeapBase& operator=(_THeap&& Other)noexcept
 		{
 			Release();
 			if (Other.HeapSize > (_TSizeType)0)
@@ -305,11 +310,13 @@ namespace PigeonEngine
 		{
 			Heap.Release();
 		}
-		PE_INLINE void Append(const TAllocatorBase& Other)
+		template<typename _TAllocator>
+		PE_INLINE void Append(const _TAllocator& Other)
 		{
 			Heap.Append(Other.Heap);
 		}
-		PE_INLINE void Append(TAllocatorBase&& Other)
+		template<typename _TAllocator>
+		PE_INLINE void Append(_TAllocator&& Other)
 		{
 			Heap.Append(EMemory::Move<THeapType>(Other.Heap));
 		}
@@ -321,11 +328,13 @@ namespace PigeonEngine
 		{
 			Heap.Substract(InExtentSize);
 		}
-		PE_INLINE void CopyFrom(const TAllocatorBase& Other)
+		template<typename _TAllocator>
+		PE_INLINE void CopyFrom(const _TAllocator& Other)
 		{
 			Heap.Copy(Other.Heap);
 		}
-		PE_INLINE void MoveFrom(TAllocatorBase&& Other)
+		template<typename _TAllocator>
+		PE_INLINE void MoveFrom(_TAllocator&& Other)
 		{
 			Release();
 			if (Other.HeapSize() > (_TSizeType)0)
@@ -358,10 +367,14 @@ namespace PigeonEngine
 			: Heap(InInitSize)
 		{
 		}
-		PE_INLINE TAllocatorBase(const TAllocatorBase& Other)noexcept = delete;
-		PE_INLINE TAllocatorBase(TAllocatorBase&& Other)noexcept = delete;
-		PE_INLINE TAllocatorBase& operator=(const TAllocatorBase& Other)noexcept = delete;
-		PE_INLINE TAllocatorBase& operator=(TAllocatorBase&& Other)noexcept = delete;
+		template<typename _TAllocator>
+		PE_INLINE TAllocatorBase(const _TAllocator& Other)noexcept = delete;
+		template<typename _TAllocator>
+		PE_INLINE TAllocatorBase(_TAllocator&& Other)noexcept = delete;
+		template<typename _TAllocator>
+		PE_INLINE TAllocatorBase& operator=(const _TAllocator& Other)noexcept = delete;
+		template<typename _TAllocator>
+		PE_INLINE TAllocatorBase& operator=(_TAllocator&& Other)noexcept = delete;
 	private:
 		THeapType Heap;
 	};
