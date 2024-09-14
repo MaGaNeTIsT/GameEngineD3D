@@ -39,7 +39,7 @@ if exist "%EngineBuildFolder%" (
 )
 
 echo Build Pigeon Engine...Start
-cmake -B "%EngineBuildFolder%" -DENABLED_WARNING_AS_ERROR=ON -DPLATFORM_WINDOWS=ON -DENABLED_HLSL_DEBUG=OFF
+cmake -B "%EngineBuildFolder%" -DENABLED_WARNING_AS_ERROR=ON -DPLATFORM_WINDOWS=ON -DENABLED_HLSL_DEBUG=ON
 echo Build Pigeon Engine...End
 
 pause

@@ -5,8 +5,8 @@ void PigeonEngine::EAnimationImporter::CreateImportEditor(TArray<EString> Paths)
 {
 	NeedUpdate = TRUE;
 	InitializeEditor = FALSE;
-	m_Paths.Clear();
-	for (UINT i = 0; i < Paths.Length(); i++)
+	m_Paths.Empty();
+	for (UINT32 i = 0, n = Paths.Num<UINT32>(); i < n; i++)
 	{
 		m_Paths.Add(Paths[i].Replace("\\", "/"));
 	}
@@ -26,7 +26,7 @@ void PigeonEngine::EAnimationImporter::UpdateImportEditor()
 
 	ImGui::Begin("Animation Importer", &NeedUpdate, ImGuiWindowFlags_::ImGuiWindowFlags_None);
 	{
-		for (UINT32 i = 0; i < m_Paths.Length(); i++)
+		for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 		{
 			ImGui::Text("FileName:");
 			ImGui::SameLine();
@@ -45,7 +45,7 @@ void PigeonEngine::EAnimationImporter::UpdateImportEditor()
 
 		if (ImGui::Button("Import"))
 		{
-			for (UINT32 i = 0; i < m_Paths.Length(); i++)
+			for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 			{
 				//Import Asset
 				EAnimationManager::GetManagerSingleton()->ImportSkeletonAnimation(EPath::GetFileNameWithoutExtension(m_Paths[i]), m_Paths[i], EBaseSettings::ENGINE_ASSET_DIRECTORY);

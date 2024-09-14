@@ -602,7 +602,7 @@ namespace PigeonEngine
 			TArray<RInputLayoutDesc> TempInputLayouts;
 			if (ReadInputLayoutNum > 0u)
 			{
-				TempInputLayouts.Resize(ReadInputLayoutNum);
+				TempInputLayouts.SetNum(ReadInputLayoutNum);
 				for (UINT32 LayoutIndex = 0u; LayoutIndex < ReadInputLayoutNum; LayoutIndex++)
 				{
 					RInputLayoutDesc* SavedAssetTypePtr = (RInputLayoutDesc*)TempPtr;
@@ -617,7 +617,7 @@ namespace PigeonEngine
 #if _EDITOR_ONLY
 					, InLoadName
 #endif
-					, TempInputLayouts.RawData(), ReadInputLayoutNum);
+					, TempInputLayouts.GetData(), ReadInputLayoutNum);
 				OutShaderAsset = TempShaderAsset->AsType<TShaderAssetType>();
 				if (!OutShaderAsset)
 				{
@@ -821,17 +821,17 @@ namespace PigeonEngine
 			TArray<RInputLayoutDesc> UsedShaderInputLayouts;
 			for (UINT32 i = 0u, n = (*InShaderInputLayoutNum); i < n; i++)
 			{
-				RInputLayoutDesc& TempDesc = UsedShaderInputLayouts.Add_Default_GetRef();
+				RInputLayoutDesc& TempDesc = UsedShaderInputLayouts.AddDefaultGetRef();
 				TempDesc = InShaderInputLayouts[i];
 			}
-			const UINT32 UsedShaderInputLayoutNum = UsedShaderInputLayouts.Length();
+			const UINT32 UsedShaderInputLayoutNum = UsedShaderInputLayouts.Num<UINT32>();
 			EString TempImportFullPath(*InImportPath);
 			TempImportFullPath = TempImportFullPath + (*InImportName) + EEngineSettings::ENGINE_IMPORT_SHADER_NAME_TYPE;
 			BOOL32 Result = ShaderAssetManager->ImportVertexShader(
 				InLoadName,
 				TempImportFullPath,
 				InLoadPath,
-				UsedShaderInputLayouts.RawData(), &UsedShaderInputLayoutNum);
+				UsedShaderInputLayouts.GetData(), &UsedShaderInputLayoutNum);
 			if (Result)
 			{
 				if (!(ShaderAssetManager->LoadVertexShaderAsset(InLoadPath, InLoadName, OutShaderAsset)))

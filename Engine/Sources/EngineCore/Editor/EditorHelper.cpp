@@ -12,7 +12,7 @@ namespace PigeonEngine
 
 	PActor* SelectObjectInViewport(const PCameraComponent* InCamera, TArray<PActor*>& InActors, const FLOAT InMouseX, const FLOAT InMouseY, const ERect& InScreenRect)
 	{
-		const UINT32 ActorNum = InActors.Length();
+		const UINT32 ActorNum = InActors.Num<UINT32>();
 		const FLOAT UsedMouseX = InMouseX;
 		const FLOAT UsedMouseY = InMouseY;
 		if ((!InCamera) || (ActorNum == 0u) || (InScreenRect.Right <= InScreenRect.Left) || (InScreenRect.Bottom <= InScreenRect.Top))
@@ -46,7 +46,7 @@ namespace PigeonEngine
 			SeparateAxis.Add(Vector3::YVector());
 			SeparateAxis.Add(Vector3::ZVector());
 		}
-		const UINT32 SeparateAxisNum = SeparateAxis.Length();
+		const UINT32 SeparateAxisNum = SeparateAxis.Num<UINT32>();
 		TArray<FLOAT> CameraProjection;
 		for (UINT32 SeparateAxisIndex = 0u; SeparateAxisIndex < SeparateAxisNum; SeparateAxisIndex++)
 		{
@@ -57,8 +57,8 @@ namespace PigeonEngine
 		TArray<FLOAT> TargetDepths;
 		{
 			Vector2 MouseScreenCoord(UsedMouseX - InScreenRect.Left, UsedMouseY - InScreenRect.Top);
-			TargetActors.Recapacity(ActorNum);
-			TargetDepths.Recapacity(ActorNum);
+			TargetActors.Reserve(ActorNum);
+			TargetDepths.Reserve(ActorNum);
 			for (UINT32 i = 0u; i < ActorNum; i++)
 			{
 				EBoundAABB TempActorBound(InActors[i]->GetBounds());
@@ -141,7 +141,7 @@ namespace PigeonEngine
 		}
 
 		PActor* Result = nullptr;
-		if (const UINT32 TargetActorNum = TargetActors.Length(); TargetActorNum > 0u)
+		if (const UINT32 TargetActorNum = TargetActors.Num<UINT32>(); TargetActorNum > 0u)
 		{
 			Result = TargetActors[0];
 			FLOAT CurrentDepth = RCommonSettings::RENDER_DEPTH_MAX;
@@ -160,7 +160,7 @@ namespace PigeonEngine
 
 	PSceneComponent* SelectObjectInViewport(const PCameraComponent* InCamera, TArray<PSceneComponent*>& InComponents, const FLOAT InMouseX, const FLOAT InMouseY, const ERect& InScreenRect)
 	{
-		const UINT32 ComponentNum = InComponents.Length();
+		const UINT32 ComponentNum = InComponents.Num<UINT32>();
 		const FLOAT UsedMouseX = InMouseX;
 		const FLOAT UsedMouseY = InMouseY;
 		
@@ -195,7 +195,7 @@ namespace PigeonEngine
 			SeparateAxis.Add(Vector3::YVector());
 			SeparateAxis.Add(Vector3::ZVector());
 		}
-		const UINT32 SeparateAxisNum = SeparateAxis.Length();
+		const UINT32 SeparateAxisNum = SeparateAxis.Num<UINT32>();
 		TArray<FLOAT> CameraProjection;
 		for (UINT32 SeparateAxisIndex = 0u; SeparateAxisIndex < SeparateAxisNum; SeparateAxisIndex++)
 		{
@@ -206,8 +206,8 @@ namespace PigeonEngine
 		TArray<FLOAT> TargetDepths;
 		{
 			Vector2 MouseScreenCoord(UsedMouseX - InScreenRect.Left, UsedMouseY - InScreenRect.Top);
-			TargetComponents.Recapacity(ComponentNum);
-			TargetDepths.Recapacity(ComponentNum);
+			TargetComponents.Reserve(ComponentNum);
+			TargetDepths.Reserve(ComponentNum);
 			for (UINT32 i = 0u; i < ComponentNum; i++)
 			{
 				EBoundAABB TempComponentBound(InComponents[i]->GetLocalBound());
@@ -290,7 +290,7 @@ namespace PigeonEngine
 		}
 
 		PSceneComponent* Result = nullptr;
-		if (const UINT32 TargetComponentNum = TargetComponents.Length(); TargetComponentNum > 0u)
+		if (const UINT32 TargetComponentNum = TargetComponents.Num<UINT32>(); TargetComponentNum > 0u)
 		{
 			Result = TargetComponents[0];
 			FLOAT CurrentDepth = RCommonSettings::RENDER_DEPTH_MAX;
@@ -310,7 +310,7 @@ namespace PigeonEngine
 #if _EDITOR_ONLY
 	void DrawObjectBounds(TArray<PActor*>& InObjects)
 	{
-		if (const UINT32 ObjectNum = InObjects.Length(); ObjectNum > 0u)
+		if (const UINT32 ObjectNum = InObjects.Num<UINT32>(); ObjectNum > 0u)
 		{
 			const Color4 DebugColor((FLOAT)(0x99) / 255.0f, (FLOAT)(0x32) / 255.0f, (FLOAT)(0xcd) / 255.0f);
 			RDebugWireframePrimitiveManager* DebugPrimitiveMangaer = RDebugWireframePrimitiveManager::GetManagerSingleton();
@@ -338,7 +338,7 @@ namespace PigeonEngine
 				);
 				Vector3 BoundCenter(0.f, 0.f, 0.f);
 				{
-					const UINT32 PointNum = BoundWorldPoints.Length();
+					const UINT32 PointNum = BoundWorldPoints.Num<UINT32>();
 					for (UINT32 PointIndex = 0u; PointIndex < PointNum; PointIndex++)
 					{
 						BoundCenter += BoundWorldPoints[PointIndex];

@@ -164,13 +164,13 @@ namespace PigeonEngine
 	};
 	PE_INLINE static void StoreSkinData(const TArray<EReaderVertexWeights>& InDatas, const UINT32 InMaxEffectNum, UINT32*& OutIndices, FLOAT*& OutWeights)
 	{
-		PE_CHECK((ENGINE_ASSET_ERROR), ("Stored origin skin data can not be null."), (InDatas.Length() > 0u));
+		PE_CHECK((ENGINE_ASSET_ERROR), ("Stored origin skin data can not be null."), (InDatas.Num() > 0));
 		PE_CHECK((ENGINE_ASSET_ERROR), ("Stored skin data's effect bone num must be bigger than 1."), (InMaxEffectNum >= 1u));
 		PE_CHECK((ENGINE_ASSET_ERROR), ("Stored indices data can not be null."), (!!OutIndices));
 		PE_CHECK((ENGINE_ASSET_ERROR), ("Stored weights data can not be null."), (!!OutWeights));
-		if (OutIndices && OutWeights && InDatas.Length() > 0u)
+		if ((!!OutIndices) && (!!OutWeights) && (InDatas.Num() > 0))
 		{
-			for (UINT32 i = 0u, n = InDatas.Length(); i < n; i++)
+			for (UINT32 i = 0u, n = InDatas.Num<UINT32>(); i < n; i++)
 			{
 				const EReaderVertexWeights& TempData = InDatas[i];
 				for (UINT32 EffectIndex = 0u; EffectIndex < InMaxEffectNum; EffectIndex++)
@@ -197,7 +197,7 @@ namespace PigeonEngine
 		}
 		OutNodes.Add(InCurrentNode);
 		{
-			SHORT NodeIndex = static_cast<SHORT>(OutNodes.Length() - 1u);
+			SHORT NodeIndex = static_cast<SHORT>(OutNodes.Num() - 1);
 			EString TempNodeName;
 			if (InCurrentNode->mName.length > 0)
 			{
@@ -253,9 +253,9 @@ namespace PigeonEngine
 	}
 	static void AssimpGatherSingleAnimationChannelData(const aiAnimation* InData, ESkeletonAnimationClip& OutData)
 	{
-		if (OutData.AnimationCurves.Length() > 0)
+		if (OutData.AnimationCurves.Num() > 0)
 		{
-			OutData.AnimationCurves.Clear();
+			OutData.AnimationCurves.Empty();
 		}
 		for (UINT32 ChannelIndex = 0u, ChannelNum = InData->mNumChannels; ChannelIndex < ChannelNum; ChannelIndex++)
 		{
@@ -265,7 +265,7 @@ namespace PigeonEngine
 				continue;
 			}
 			OutData.AnimationCurves.Add(EBoneAnimationCurve(AssimpTranslateString(TempChannel->mNodeName)));
-			EBoneAnimationCurve& NewCurve = OutData.AnimationCurves[OutData.AnimationCurves.Length() - 1u];
+			EBoneAnimationCurve& NewCurve = OutData.AnimationCurves[OutData.AnimationCurves.Num() - 1];
 			if (TempChannel->mPositionKeys)
 			{
 				for (UINT32 PosKeyIndex = 0u; PosKeyIndex < TempChannel->mNumPositionKeys; PosKeyIndex++)
@@ -303,9 +303,9 @@ namespace PigeonEngine
 			NewCurve.PostState = AssimpTranslateAnimationBehaviour(TempChannel->mPostState);
 			// TODO Is this necessary?
 			{
-				NewCurve.PositionKeys.Sort();
-				NewCurve.RotationKeys.Sort();
-				NewCurve.ScalingKeys.Sort();
+				NewCurve.PositionKeys.DefaultSort();
+				NewCurve.RotationKeys.DefaultSort();
+				NewCurve.ScalingKeys.DefaultSort();
 			}
 		}
 	}
@@ -324,17 +324,17 @@ namespace PigeonEngine
 		{
 			return FALSE;
 		}
-		if (OutLayouts.Length() > 0u)
+		if (OutLayouts.Num() > 0)
 		{
-			OutLayouts.Clear();
+			OutLayouts.Empty();
 		}
-		if (OutMeshes.Length() > 0u)
+		if (OutMeshes.Num() > 0)
 		{
-			OutMeshes.Clear();
+			OutMeshes.Empty();
 		}
-		if (OutIsSkeletalMesh.Length() > 0u)
+		if (OutIsSkeletalMesh.Num() > 0)
 		{
-			OutIsSkeletalMesh.Clear();
+			OutIsSkeletalMesh.Empty();
 		}
 		for (UINT32 i = 0u, n = InScene->mNumMeshes; i < n; i++)
 		{
@@ -344,16 +344,16 @@ namespace PigeonEngine
 				OutMeshes.Add(PerMesh);
 			}
 		}
-		if (OutMeshes.Length() < 1u)
+		if (OutMeshes.Num() < 1)
 		{
 			return FALSE;
 		}
-		for (UINT32 i = 0u, n = OutMeshes.Length(); i < n; i++)
+		for (INT32 i = 0, n = OutMeshes.Num(); i < n; i++)
 		{
 			OutLayouts.Add(TArray<RShaderSemanticType>());
 			OutIsSkeletalMesh.Add(FALSE);
 			const aiMesh* PerMesh = OutMeshes[i];
-			TArray<RShaderSemanticType>& PerMeshLayout = OutLayouts[OutLayouts.Length() - 1u];
+			TArray<RShaderSemanticType>& PerMeshLayout = OutLayouts[OutLayouts.Num() - 1];
 			if (PerMesh->HasPositions())
 			{
 				PerMeshLayout.Add(RShaderSemanticType::SHADER_SEMANTIC_POSITION);
@@ -395,7 +395,7 @@ namespace PigeonEngine
 			}
 			if (PerMesh->HasBones())
 			{
-				OutIsSkeletalMesh[OutIsSkeletalMesh.Length() - 1u] = TRUE;
+				OutIsSkeletalMesh[OutIsSkeletalMesh.Num() - 1] = TRUE;
 				PerMeshLayout.Add(RShaderSemanticType::SHADER_SEMANTIC_BLENDINDICES);
 				PerMeshLayout.Add(RShaderSemanticType::SHADER_SEMANTIC_BLENDWEIGHT);
 			}
@@ -434,7 +434,7 @@ namespace PigeonEngine
 		UINT32 AddElementCounter = 0u;
 		for (UINT32 TryStoredSlotIndex = 0u; TryStoredSlotIndex < InStoredLayoutNum; TryStoredSlotIndex++)
 		{
-			if (AddElementCounter >= InDatas.Length())
+			if (AddElementCounter >= InDatas.Num<UINT32>())
 			{
 				return;
 			}
@@ -470,7 +470,7 @@ namespace PigeonEngine
 		{
 			//Add bind pose for skinned datas.
 			OutMesh.ClearBindPose();
-			for (UINT32 i = 0u, n = InBones.Length(); i < n; i++)
+			for (INT32 i = 0, n = InBones.Num(); i < n; i++)
 			{
 				const aiBone* TempBone = InBones[i];
 				if (!TempBone)
@@ -485,16 +485,16 @@ namespace PigeonEngine
 		USHORT TempMaxWeightCount = 0u;
 		{
 			const ESkinnedMesh::EBindPoseIndex& TempBoneList = OutMesh.GetBindPoseIndex();
-			if (TempBoneList.Length() == 0u)
+			if (TempBoneList.Num() == 0)
 			{
 				return;
 			}
-			TempVertexWeights.Recapacity(InVertexNum);
+			TempVertexWeights.Reserve(InVertexNum);
 			for (UINT32 i = 0u; i < InVertexNum; i++)
 			{
 				TempVertexWeights.Add(EReaderVertexWeights());
 			}
-			for (UINT32 i = 0u, n = InBones.Length(); i < n; i++)
+			for (INT32 i = 0, n = InBones.Num(); i < n; i++)
 			{
 				const aiBone* TempBone = InBones[i];
 				if (!TempBone)
@@ -599,7 +599,7 @@ namespace PigeonEngine
 				continue;
 			}
 			Result.Add(StoredMeshLayoutDesc());
-			StoredMeshLayoutDesc& CurrentDesc = Result[Result.Length() - 1u];
+			StoredMeshLayoutDesc& CurrentDesc = Result[Result.Num() - 1];
 			CurrentDesc.TryStoredLayoutNum += 1u;
 			CurrentDesc.TryStoredLayoutSlot[CurrentDesc.TryStoredLayoutNum - 1u] = SemanticTypeSlot;
 
@@ -607,15 +607,15 @@ namespace PigeonEngine
 			CurrentDesc.BaseVertexLayout = TranslateSemanticBaseTypeToVertexBaseLayout(SemanticBaseType);
 		}
 #if !(_SHIPPING_MODE)
-		if ((BlendIndicesSlots.Length()) > 0u)
+		if ((BlendIndicesSlots.Num()) > 0)
 #else
-		if (((BlendIndicesSlots.Length()) > 0u) && ((BlendIndicesSlots.Length()) == (BlendWeightsSlots.Length())))
+		if (((BlendIndicesSlots.Num()) > 0) && ((BlendIndicesSlots.Num()) == (BlendWeightsSlots.Num())))
 #endif
 		{
 #if !(_SHIPPING_MODE)
-			PE_CHECK((ENGINE_ASSET_ERROR), ("number of [BlendIndices] and number of [BlendWeight] is not matched."), ((BlendIndicesSlots.Length()) == (BlendWeightsSlots.Length())));
+			PE_CHECK((ENGINE_ASSET_ERROR), ("number of [BlendIndices] and number of [BlendWeight] is not matched."), ((BlendIndicesSlots.Num()) == (BlendWeightsSlots.Num())));
 #endif
-			for (UINT32 BlendIndex = 0u, BlendNum = BlendIndicesSlots.Length(); BlendIndex < BlendNum; BlendIndex++)
+			for (INT32 BlendIndex = 0, BlendNum = BlendIndicesSlots.Num(); BlendIndex < BlendNum; BlendIndex++)
 			{
 				UINT32 BlendIndicesSlot = BlendIndicesSlots[BlendIndex];
 				UINT32 BlendWeightsSlot = BlendWeightsSlots[BlendIndex];
@@ -628,7 +628,7 @@ namespace PigeonEngine
 				}
 #endif
 				Result.Add(StoredMeshLayoutDesc());
-				StoredMeshLayoutDesc& CurrentDesc = Result[Result.Length() - 1u];
+				StoredMeshLayoutDesc& CurrentDesc = Result[Result.Num() - 1];
 				CurrentDesc.BaseVertexLayout = EVertexLayoutType::MESH_SKIN;
 				CurrentDesc.TryStoredLayoutNum += 1u;
 				CurrentDesc.TryStoredLayoutSlot[CurrentDesc.TryStoredLayoutNum - 1u] = BlendIndicesSlot;
@@ -667,13 +667,13 @@ namespace PigeonEngine
 	}
 	static void CombineEngineMeshIntoSubmeshes(const TArray<EStaticMesh>& InMeshes, EStaticMesh& OutMesh)
 	{
-		if (InMeshes.Length() == 0u)
+		if (InMeshes.Num() <= 0)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("There is no static meshes for combine."));
 			return;
 		}
 
-		if (InMeshes.Length() == 1u)
+		if (InMeshes.Num() == 1)
 		{
 			OutMesh = InMeshes[0];
 			return;
@@ -718,7 +718,7 @@ namespace PigeonEngine
 		UINT32 MeshVertexLayoutNum[6] = { 0u, 0u, 0u, 0u, 0u, 0u };
 		UINT32 NewMeshVertexNum = 0u, NewMeshIndexNum = 0u;
 		TArray<ESubmeshData> NewMeshSubmeshDatas;
-		for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+		for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 		{
 			const EStaticMesh&			UsedMesh				= InMeshes[MeshIndex];
 			const EMesh::EVertexPart&	VertexPart				= UsedMesh.GetVertexPart();
@@ -726,13 +726,13 @@ namespace PigeonEngine
 			const UINT32				UsedMeshVertexLayout	= UsedMesh.GetVertexLayout();
 			Check((UsedMeshVertexLayout != 0x0u), (ENGINE_ASSET_ERROR));
 			Check(((IndexPart.ElementNum > 0u) && ((IndexPart.Stride == 2u) || (IndexPart.Stride == 4u))), (ENGINE_ASSET_ERROR));
-			Check((VertexPart.Length() > 0u), (ENGINE_ASSET_ERROR));
+			Check((VertexPart.Num() > 0), (ENGINE_ASSET_ERROR));
 			//UINT32 TempMeshVertexLayoutNum = 0u;
 			for (UINT32 MeshVertexLayoutIndex = 0u; MeshVertexLayoutIndex < 6u; MeshVertexLayoutIndex++)
 			{
 				MeshVertexLayoutNum[MeshVertexLayoutIndex] = (MeshVertexLayoutNum[MeshVertexLayoutIndex]) | ((UsedMeshVertexLayout & (0xfu << (VertexLayoutIndices[MeshVertexLayoutIndex]))) >> (VertexLayoutIndices[MeshVertexLayoutIndex]));
 			}
-			ESubmeshData& NewSubmeshData = NewMeshSubmeshDatas.Add_Default_GetRef();
+			ESubmeshData& NewSubmeshData = NewMeshSubmeshDatas.AddDefaultGetRef();
 			NewSubmeshData.StartIndex	= NewMeshIndexNum;
 			NewSubmeshData.IndexNum		= IndexPart.ElementNum;
 			NewSubmeshData.StartVertex	= NewMeshVertexNum;
@@ -760,7 +760,7 @@ namespace PigeonEngine
 				{
 					for (UINT32 LayoutPartIndex = 0u; LayoutPartIndex < 4u; LayoutPartIndex++)
 					{
-						EVertexData& NewVertexData	= NewVertexDatas.Add_Default_GetRef();
+						EVertexData& NewVertexData	= NewVertexDatas.AddDefaultGetRef();
 						NewVertexData.PartType		= VertexLayoutTypes[LayoutIndex];
 						NewVertexData.ElementNum	= NewMeshVertexNum;
 						NewVertexData.Stride		= 0u;
@@ -774,7 +774,7 @@ namespace PigeonEngine
 					}
 				}
 			}
-			for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+			for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 			{
 				const EStaticMesh&	UsedMesh		= InMeshes[MeshIndex];
 				const ESubmeshData&	NewSubmeshData	= NewMeshSubmeshDatas[MeshIndex];
@@ -788,7 +788,7 @@ namespace PigeonEngine
 				}
 
 				// Vertex part append
-				Check((UsedMesh.GetVertexPart().Length() > 0u), (ENGINE_ASSET_ERROR));
+				Check((UsedMesh.GetVertexPart().Num() > 0), (ENGINE_ASSET_ERROR));
 				Check((NewSubmeshData.VertexNum == (UsedMesh.GetVertexPart())[0].ElementNum), (ENGINE_ASSET_ERROR));
 				for (UINT32 LayoutIndex = 0u; LayoutIndex < 6u; LayoutIndex++)
 				{
@@ -832,7 +832,7 @@ namespace PigeonEngine
 				}
 			}
 		}
-		for (UINT32 SubmeshIndex = 0u, SubmeshNum = NewMeshSubmeshDatas.Length(); SubmeshIndex < SubmeshNum; SubmeshIndex++)
+		for (INT32 SubmeshIndex = 0, SubmeshNum = NewMeshSubmeshDatas.Num(); SubmeshIndex < SubmeshNum; SubmeshIndex++)
 		{
 			ESubmeshData& NewMeshSubmeshData = NewMeshSubmeshDatas[SubmeshIndex];
 			OutMesh.AddSubmesh(&NewMeshSubmeshData);
@@ -840,7 +840,7 @@ namespace PigeonEngine
 	}
 	static void CombineEngineMeshIntoSubmeshes(const TArray<ESkinnedMesh>& InMeshes, const USHORT InMaxBoneWeightNum, ESkinnedMesh& OutMesh)
 	{
-		if (InMeshes.Length() == 0u)
+		if (InMeshes.Num() <= 0)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("There is no skinned meshes for combine."));
 			return;
@@ -848,7 +848,7 @@ namespace PigeonEngine
 
 		Check(((InMaxBoneWeightNum > 0u) && (InMaxBoneWeightNum <= EEngineSettings::ENGINE_BONE_WEIGHT_NUM_MAXIMUM)), (ENGINE_ASSET_ERROR));
 
-		if (InMeshes.Length() == 1u)
+		if (InMeshes.Num() == 1)
 		{
 			OutMesh = InMeshes[0];
 			return;
@@ -896,7 +896,7 @@ namespace PigeonEngine
 		UINT32 MeshVertexLayoutNum[7] = { 0u, 0u, 0u, 0u, 0u, 0u, 0u };
 		UINT32 NewMeshVertexNum = 0u, NewMeshIndexNum = 0u;
 		TArray<ESubmeshData> NewMeshSubmeshDatas;
-		for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+		for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 		{
 			const ESkinnedMesh&				UsedMesh				= InMeshes[MeshIndex];
 			const EMesh::EVertexPart&		VertexPart				= UsedMesh.GetVertexPart();
@@ -907,9 +907,9 @@ namespace PigeonEngine
 			const UINT32					UsedMeshVertexLayout	= UsedMesh.GetVertexLayout();
 			Check((UsedMeshVertexLayout != 0x0u), (ENGINE_ASSET_ERROR));
 			Check(((IndexPart.ElementNum > 0u) && ((IndexPart.Stride == 2u) || (IndexPart.Stride == 4u))), (ENGINE_ASSET_ERROR));
-			Check((VertexPart.Length() > 0u), (ENGINE_ASSET_ERROR));
+			Check((VertexPart.Num() > 0), (ENGINE_ASSET_ERROR));
 #if _EDITOR_ONLY
-			Check((SkinPart.Length() > 0u), (ENGINE_ASSET_ERROR));
+			Check((SkinPart.Num() > 0), (ENGINE_ASSET_ERROR));
 			Check((VertexPart[0].ElementNum == SkinPart[0].ElementNum), (ENGINE_ASSET_ERROR));
 #endif
 			//UINT32 TempMeshVertexLayoutNum = 0u;
@@ -917,7 +917,7 @@ namespace PigeonEngine
 			{
 				MeshVertexLayoutNum[MeshVertexLayoutIndex] = (MeshVertexLayoutNum[MeshVertexLayoutIndex]) | ((UsedMeshVertexLayout & (0xfu << (VertexLayoutIndices[MeshVertexLayoutIndex]))) >> (VertexLayoutIndices[MeshVertexLayoutIndex]));
 			}
-			ESubmeshData& NewSubmeshData = NewMeshSubmeshDatas.Add_Default_GetRef();
+			ESubmeshData& NewSubmeshData = NewMeshSubmeshDatas.AddDefaultGetRef();
 			NewSubmeshData.StartIndex	= NewMeshIndexNum;
 			NewSubmeshData.IndexNum		= IndexPart.ElementNum;
 			NewSubmeshData.StartVertex	= NewMeshVertexNum;
@@ -927,7 +927,7 @@ namespace PigeonEngine
 
 			const ESkinnedMesh::EBindPoseIndex& BindPoseIndexPart = UsedMesh.GetBindPoseIndex();
 			const ESkinnedMesh::EBindPoseValue& BindPoseValuePart = UsedMesh.GetBindPoseValue();
-			Check(((BindPoseIndexPart.Length() > 0u) && (BindPoseIndexPart.Length() == BindPoseValuePart.Length())), (ENGINE_ASSET_ERROR));
+			Check(((BindPoseIndexPart.Num() > 0) && (BindPoseIndexPart.Num() == BindPoseValuePart.Num())), (ENGINE_ASSET_ERROR));
 			for (auto It = BindPoseIndexPart.Begin(); It != BindPoseIndexPart.End(); It++)
 			{
 				if (const Matrix4x4* BindPoseValuePtr = BindPoseValuePart.FindValueAsPtr(It->first); !!BindPoseValuePtr)
@@ -961,7 +961,7 @@ namespace PigeonEngine
 				{
 					for (UINT32 LayoutPartIndex = 0u; LayoutPartIndex < 4u; LayoutPartIndex++)
 					{
-						EVertexData& NewVertexData	= NewVertexDatas.Add_Default_GetRef();
+						EVertexData& NewVertexData	= NewVertexDatas.AddDefaultGetRef();
 						NewVertexData.PartType		= VertexLayoutTypes[LayoutIndex];
 						NewVertexData.ElementNum	= NewMeshVertexNum;
 						NewVertexData.Stride		= 0u;
@@ -976,7 +976,7 @@ namespace PigeonEngine
 				}
 				for (UINT32 LayoutPartIndex = 0u; LayoutPartIndex < 4u; LayoutPartIndex++)
 				{
-					ESkinData& NewSkinData	= NewSkinDatas.Add_Default_GetRef();
+					ESkinData& NewSkinData	= NewSkinDatas.AddDefaultGetRef();
 					NewSkinData.PartType	= VertexLayoutTypes[6];
 					NewSkinData.ElementNum	= NewMeshVertexNum;
 					NewSkinData.Stride		= 0u;
@@ -993,7 +993,7 @@ namespace PigeonEngine
 				}
 			}
 			const ESkinnedMesh::EBindPoseIndex& NewBindPoseIndexPart = OutMesh.GetBindPoseIndex();
-			for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+			for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 			{
 				const ESkinnedMesh& UsedMesh = InMeshes[MeshIndex];
 				const ESubmeshData& NewSubmeshData = NewMeshSubmeshDatas[MeshIndex];
@@ -1007,7 +1007,7 @@ namespace PigeonEngine
 				}
 
 				// Vertex part append
-				Check((UsedMesh.GetVertexPart().Length() > 0u), (ENGINE_ASSET_ERROR));
+				Check((UsedMesh.GetVertexPart().Num() > 0), (ENGINE_ASSET_ERROR));
 				Check((NewSubmeshData.VertexNum == (UsedMesh.GetVertexPart())[0].ElementNum), (ENGINE_ASSET_ERROR));
 				for (UINT32 LayoutIndex = 0u; LayoutIndex < 6u; LayoutIndex++)
 				{
@@ -1039,7 +1039,7 @@ namespace PigeonEngine
 				{
 					TempBindPoseIndexPart.Add(It->second, It->first);
 				}
-				Check((UsedMesh.GetSkinPart().Length() > 0u), (ENGINE_ASSET_ERROR));
+				Check((UsedMesh.GetSkinPart().Num() > 0), (ENGINE_ASSET_ERROR));
 				Check((NewSubmeshData.VertexNum == (UsedMesh.GetSkinPart())[0].ElementNum), (ENGINE_ASSET_ERROR));
 				for (UINT32 LayoutPartIndex = 0u; LayoutPartIndex < 4u; LayoutPartIndex++)
 				{
@@ -1112,16 +1112,17 @@ namespace PigeonEngine
 #endif
 			}
 		}
-		for (UINT32 SubmeshIndex = 0u, SubmeshNum = NewMeshSubmeshDatas.Length(); SubmeshIndex < SubmeshNum; SubmeshIndex++)
+		for (INT32 SubmeshIndex = 0, SubmeshNum = NewMeshSubmeshDatas.Num(); SubmeshIndex < SubmeshNum; SubmeshIndex++)
 		{
 			ESubmeshData& NewMeshSubmeshData = NewMeshSubmeshDatas[SubmeshIndex];
+
 			OutMesh.AddSubmesh(&NewMeshSubmeshData);
 		}
 	}
 	static void TranslateAssimpMeshToEngineMeshInternal(const RShaderSemanticType* InEngineLayouts, const UINT32 InEngineLayoutNum, const TArray<const aiMesh*>& InMeshes, TArray<EStaticMesh>& OutMeshes)
 	{
 		TArray<StoredMeshLayoutDesc> ShouldStoredLayoutDescriptions = GetShouldStoredMeshLayoutDescriptions(InEngineLayouts, InEngineLayoutNum);
-		for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+		for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 		{
 			const aiMesh* AssimpMesh = InMeshes[MeshIndex];
 			if ((!AssimpMesh) || ((AssimpMesh->mNumVertices) < 3u) || (!(AssimpMesh->HasFaces())) || ((AssimpMesh->mNumFaces) < 3u))
@@ -1129,7 +1130,7 @@ namespace PigeonEngine
 				continue;
 			}
 			OutMeshes.Add(EStaticMesh(AssimpTranslateString(AssimpMesh->mName)));
-			EStaticMesh& OutMesh = OutMeshes[OutMeshes.Length() - 1u];
+			EStaticMesh& OutMesh = OutMeshes[OutMeshes.Num() - 1];
 			{
 				OutMesh.SetBoundAABB(AssimpTranslateVector3(AssimpMesh->mAABB.mMin), AssimpTranslateVector3(AssimpMesh->mAABB.mMax));
 
@@ -1149,7 +1150,7 @@ namespace PigeonEngine
 
 				OutMesh.AddSubmesh(&NewSubmeshData);
 			}
-			for (UINT32 LayoutDescIndex = 0u, LayoutDescNum = ShouldStoredLayoutDescriptions.Length(); LayoutDescIndex < LayoutDescNum; LayoutDescIndex++)
+			for (INT32 LayoutDescIndex = 0, LayoutDescNum = ShouldStoredLayoutDescriptions.Num(); LayoutDescIndex < LayoutDescNum; LayoutDescIndex++)
 			{
 				StoredMeshLayoutDesc& StoredLayoutDesc = ShouldStoredLayoutDescriptions[LayoutDescIndex];
 				EVertexLayoutType TempTryStoredLayoutBaseType = StoredLayoutDesc.BaseVertexLayout;
@@ -1248,7 +1249,7 @@ namespace PigeonEngine
 	static void TranslateAssimpMeshToEngineMeshInternal(const RShaderSemanticType* InEngineLayouts, const UINT32 InEngineLayoutNum, const TArray<const aiMesh*>& InMeshes, TArray<ESkinnedMesh>& OutMeshes)
 	{
 		TArray<StoredMeshLayoutDesc> ShouldStoredLayoutDescriptions = GetShouldStoredMeshLayoutDescriptions(InEngineLayouts, InEngineLayoutNum);
-		for (UINT32 MeshIndex = 0u, MeshNum = InMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+		for (INT32 MeshIndex = 0, MeshNum = InMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 		{
 			const aiMesh* AssimpMesh = InMeshes[MeshIndex];
 			if ((!AssimpMesh) || ((AssimpMesh->mNumVertices) < 3u) || (!(AssimpMesh->HasFaces())) || ((AssimpMesh->mNumFaces) < 3u))
@@ -1256,7 +1257,7 @@ namespace PigeonEngine
 				continue;
 			}
 			OutMeshes.Add(ESkinnedMesh(AssimpTranslateString(AssimpMesh->mName)));
-			ESkinnedMesh& OutMesh = OutMeshes[OutMeshes.Length() - 1u];
+			ESkinnedMesh& OutMesh = OutMeshes[OutMeshes.Num() - 1];
 			{
 				OutMesh.SetBoundAABB(AssimpTranslateVector3(AssimpMesh->mAABB.mMin), AssimpTranslateVector3(AssimpMesh->mAABB.mMax));
 
@@ -1276,7 +1277,7 @@ namespace PigeonEngine
 
 				OutMesh.AddSubmesh(&NewSubmeshData);
 			}
-			for (UINT32 LayoutDescIndex = 0u, LayoutDescNum = ShouldStoredLayoutDescriptions.Length(); LayoutDescIndex < LayoutDescNum; LayoutDescIndex++)
+			for (INT32 LayoutDescIndex = 0, LayoutDescNum = ShouldStoredLayoutDescriptions.Num(); LayoutDescIndex < LayoutDescNum; LayoutDescIndex++)
 			{
 				StoredMeshLayoutDesc& StoredLayoutDesc = ShouldStoredLayoutDescriptions[LayoutDescIndex];
 				EVertexLayoutType TempTryStoredLayoutBaseType = StoredLayoutDesc.BaseVertexLayout;
@@ -1395,9 +1396,9 @@ namespace PigeonEngine
 	}
 	static BOOL32 GatherAllBoneNodeDatas(const aiScene* InScene, TArray<EBoneData>& OutBones, TMap<EString, SHORT>& OutBoneIndices)
 	{
-		if (OutBones.Length() > 0u)
+		if (OutBones.Num() > 0)
 		{
-			OutBones.Clear();
+			OutBones.Empty();
 		}
 
 		// Read data structures of all nodes.
@@ -1405,13 +1406,13 @@ namespace PigeonEngine
 		AssimpGatherSingleNodeRecursion(InScene->mRootNode, TempNodes, TempNodeNames, TempNodeIndices);
 
 		// Check read state.
-		if ((TempNodes.Length() < 1u) || (TempNodes.Length() != TempNodeNames.Length()) || (TempNodes.Length() != TempNodeIndices.Length()))
+		if ((TempNodes.Num() < 1) || (TempNodes.Num() != TempNodeNames.Num()) || (TempNodes.Num() != TempNodeIndices.Num()))
 		{
 			return FALSE;
 		}
 
 		// Create engine's hierarchical bones' data.
-		for (UINT32 NodeIndex = 0u, NodeNum = TempNodes.Length(); NodeIndex < NodeNum; NodeIndex++)
+		for (INT32 NodeIndex = 0, NodeNum = TempNodes.Num(); NodeIndex < NodeNum; NodeIndex++)
 		{
 			EString TempNodeName;
 			if (!(TempNodeNames.FindValue(TempNodes[NodeIndex], TempNodeName)))
@@ -1420,7 +1421,7 @@ namespace PigeonEngine
 				continue;
 			}
 			OutBones.Add(EBoneData(TempNodeName));
-			EBoneData& NewBone = OutBones[OutBones.Length() - 1u];
+			EBoneData& NewBone = OutBones[OutBones.Num() - 1];
 			NewBone.Index = static_cast<SHORT>(NodeIndex);
 			NewBone.Parent = -1;
 			if (TempNodes[NodeIndex]->mParent != nullptr)
@@ -1442,7 +1443,7 @@ namespace PigeonEngine
 		AssimpReadNodeDefaultTransformRecursion(InScene->mRootNode, TempNodeNames, OutBoneIndices, OutBones);
 
 		// Save node's child relation.
-		for (SHORT NodeIndex = 0, NodeNum = static_cast<SHORT>(OutBones.Length()); NodeIndex < NodeNum; NodeIndex++)
+		for (SHORT NodeIndex = 0, NodeNum = OutBones.Num<SHORT>(); NodeIndex < NodeNum; NodeIndex++)
 		{
 			EBoneData& BoneData = OutBones[NodeIndex];
 			if ((NodeIndex != BoneData.Index) || (BoneData.Parent < 0) || (BoneData.Parent >= NodeNum))
@@ -1457,15 +1458,15 @@ namespace PigeonEngine
 	}
 	static BOOL32 GatherAllAnimationChannelDatas(const TMap<EString, const aiAnimation*>& InAnimations, TArray<ESkeletonAnimationClip>& OutSkeletonAnimationClips)
 	{
-		if (OutSkeletonAnimationClips.Length() > 0u)
+		if (OutSkeletonAnimationClips.Num() > 0)
 		{
-			OutSkeletonAnimationClips.Clear();
+			OutSkeletonAnimationClips.Empty();
 		}
 		BOOL32 Result = TRUE;
 		for (auto It = InAnimations.Begin(); It != InAnimations.End(); It++)
 		{
 			OutSkeletonAnimationClips.Add(ESkeletonAnimationClip(It->first));
-			ESkeletonAnimationClip& NewAnimationClip = OutSkeletonAnimationClips[OutSkeletonAnimationClips.Length() - 1u];
+			ESkeletonAnimationClip& NewAnimationClip = OutSkeletonAnimationClips[OutSkeletonAnimationClips.Num() - 1];
 			const aiAnimation* Animation = It->second;
 			NewAnimationClip.Duration = static_cast<FLOAT>(Animation->mDuration);
 			NewAnimationClip.TicksPerSecond = static_cast<FLOAT>(Animation->mTicksPerSecond);
@@ -1538,13 +1539,13 @@ namespace PigeonEngine
 	{
 		CReadFileStateType Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_FAILED;
 
-		if (OutMeshes.Length() > 0u)
+		if (OutMeshes.Num() > 0)
 		{
-			for (UINT32 i = 0u, n = OutMeshes.Length(); i < n; i++)
+			for (INT32 i = 0, n = OutMeshes.Num(); i < n; i++)
 			{
 				OutMeshes[i].ReleaseResource();
 			}
-			OutMeshes.Clear();
+			OutMeshes.Empty();
 		}
 
 		Assimp::Importer* AssImporter = _GAssetImporter;
@@ -1604,8 +1605,8 @@ namespace PigeonEngine
 		{
 			TArray<const aiMesh*> TempMeshes; TArray<TArray<RShaderSemanticType>> TempMeshesLayouts; TArray<BOOL32> TempIsSkeletalMesh;
 			FindMeshesAndVertexLayouts(Scene, TempMeshes, TempMeshesLayouts, TempIsSkeletalMesh);
-			PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (TempMeshes.Length() > 0u && TempMeshes.Length() == TempMeshesLayouts.Length() && TempMeshes.Length() == TempIsSkeletalMesh.Length()));
-			for (UINT32 i = 0u, n = TempMeshes.Length(); i < n; i++)
+			PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (TempMeshes.Num() > 0 && TempMeshes.Num() == TempMeshesLayouts.Num() && TempMeshes.Num() == TempIsSkeletalMesh.Num()));
+			for (INT32 i = 0u, n = TempMeshes.Num(); i < n; i++)
 			{
 				if (TempIsSkeletalMesh[i])
 				{
@@ -1615,7 +1616,7 @@ namespace PigeonEngine
 			}
 		}
 
-		if (Meshes.Length() == 0u)
+		if (Meshes.Num() <= 0)
 		{
 			Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_ERROR;
 			// TODO Scene does not contain static meshes
@@ -1623,7 +1624,7 @@ namespace PigeonEngine
 			return Result;
 		}
 
-		PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (Meshes.Length() > 0u));
+		PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (Meshes.Num() > 0));
 
 		const RShaderSemanticType* EngineLayouts; UINT32 EngineLayoutNum;
 		GetEngineDefaultMeshInputLayouts(EngineLayouts, EngineLayoutNum);
@@ -1633,8 +1634,8 @@ namespace PigeonEngine
 		{
 			TranslateAssimpMeshToEngineMeshInternal(EngineLayouts, EngineLayoutNum, Meshes, TempOutMeshes);
 
-			EStaticMesh& NewStaticMesh = OutMeshes.Add_Default_GetRef();
-			if (TempOutMeshes.Length() > 0u)
+			EStaticMesh& NewStaticMesh = OutMeshes.AddDefaultGetRef();
+			if (TempOutMeshes.Num() > 0)
 			{
 				NewStaticMesh.SetMeshName(TempOutMeshes[0].GetMeshName());
 			}
@@ -1647,7 +1648,7 @@ namespace PigeonEngine
 		{
 			TranslateAssimpMeshToEngineMeshInternal(EngineLayouts, EngineLayoutNum, Meshes, OutMeshes);
 
-			for (UINT32 OutMeshIndex = 0u, OutMeshNum = OutMeshes.Length(); OutMeshIndex < OutMeshNum; OutMeshIndex++)
+			for (INT32 OutMeshIndex = 0, OutMeshNum = OutMeshes.Num(); OutMeshIndex < OutMeshNum; OutMeshIndex++)
 			{
 				GatherMeshBounds(OutMeshes[OutMeshIndex]);
 			}
@@ -1723,7 +1724,7 @@ namespace PigeonEngine
 			return Result;
 		}
 
-		for (UINT32 i = 0u, n = BoneDatas.Length(); i < n; i++)
+		for (INT32 i = 0u, n = BoneDatas.Num(); i < n; i++)
 		{
 			OutSkeleton.AddBoneElement(&(BoneDatas[i]));
 		}
@@ -1737,13 +1738,13 @@ namespace PigeonEngine
 	{
 		CReadFileStateType Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_FAILED;
 
-		if (OutMeshes.Length() > 0u)
+		if (OutMeshes.Num() > 0)
 		{
-			for (UINT32 i = 0u, n = OutMeshes.Length(); i < n; i++)
+			for (INT32 i = 0u, n = OutMeshes.Num(); i < n; i++)
 			{
 				OutMeshes[i].ReleaseResource();
 			}
-			OutMeshes.Clear();
+			OutMeshes.Empty();
 		}
 
 		Assimp::Importer* AssImporter = _GAssetImporter;
@@ -1806,8 +1807,8 @@ namespace PigeonEngine
 		{
 			TArray<const aiMesh*> TempMeshes; TArray<TArray<RShaderSemanticType>> TempMeshesLayouts; TArray<BOOL32> TempIsSkeletalMesh;
 			FindMeshesAndVertexLayouts(Scene, TempMeshes, TempMeshesLayouts, TempIsSkeletalMesh);
-			PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (TempMeshes.Length() > 0u && TempMeshes.Length() == TempMeshesLayouts.Length() && TempMeshes.Length() == TempIsSkeletalMesh.Length()));
-			for (UINT32 i = 0u, n = TempMeshes.Length(); i < n; i++)
+			PE_CHECK((ENGINE_ASSET_ERROR), ("Meshes and layouts are not matched."), (TempMeshes.Num() > 0 && TempMeshes.Num() == TempMeshesLayouts.Num() && TempMeshes.Num() == TempIsSkeletalMesh.Num()));
+			for (INT32 i = 0, n = TempMeshes.Num(); i < n; i++)
 			{
 				if (!(TempIsSkeletalMesh[i]))
 				{
@@ -1817,7 +1818,7 @@ namespace PigeonEngine
 			}
 		}
 
-		if (Meshes.Length() == 0u)
+		if (Meshes.Num() <= 0)
 		{
 			Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_ERROR;
 			// TODO Scene does not contain static meshes
@@ -1833,13 +1834,13 @@ namespace PigeonEngine
 		{
 			TranslateAssimpMeshToEngineMeshInternal(EngineLayouts, EngineLayoutNum, Meshes, TempOutMeshes);
 
-			ESkinnedMesh& NewSkinnedMesh = OutMeshes.Add_Default_GetRef();
-			if (TempOutMeshes.Length() > 0u)
+			ESkinnedMesh& NewSkinnedMesh = OutMeshes.AddDefaultGetRef();
+			if (TempOutMeshes.Num() > 0)
 			{
 				NewSkinnedMesh.SetMeshName(TempOutMeshes[0].GetMeshName());
 			}
 			USHORT EffectBoneNum = 0u;
-			for (UINT32 MeshIndex = 0u, MeshNum = TempOutMeshes.Length(); MeshIndex < MeshNum; MeshIndex++)
+			for (INT32 MeshIndex = 0, MeshNum = TempOutMeshes.Num(); MeshIndex < MeshNum; MeshIndex++)
 			{
 				ESkinnedMesh& TempSkinnedMesh = TempOutMeshes[MeshIndex];
 				EffectBoneNum = EMath::Max(EffectBoneNum, TempSkinnedMesh.GetEffectBoneNum());
@@ -1853,7 +1854,7 @@ namespace PigeonEngine
 		{
 			TranslateAssimpMeshToEngineMeshInternal(EngineLayouts, EngineLayoutNum, Meshes, OutMeshes);
 
-			for (UINT32 OutMeshIndex = 0u, OutMeshNum = OutMeshes.Length(); OutMeshIndex < OutMeshNum; OutMeshIndex++)
+			for (INT32 OutMeshIndex = 0, OutMeshNum = OutMeshes.Num(); OutMeshIndex < OutMeshNum; OutMeshIndex++)
 			{
 				GatherMeshBounds(OutMeshes[OutMeshIndex]);
 			}
@@ -1868,9 +1869,9 @@ namespace PigeonEngine
 	{
 		CReadFileStateType Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_FAILED;
 
-		if (OutSkeletonAnimationClips.Length() > 0u)
+		if (OutSkeletonAnimationClips.Num() > 0)
 		{
-			OutSkeletonAnimationClips.Clear();
+			OutSkeletonAnimationClips.Empty();
 		}
 
 		Assimp::Importer* AssImporter = _GAssetImporter;
@@ -1927,7 +1928,7 @@ namespace PigeonEngine
 				{
 					const aiAnimation* TempValue = nullptr;
 					UINT32 SameNameIndex = 0u;
-					if (SceneAnimations.Length() > 0u)
+					if (SceneAnimations.Num() > 0)
 					{
 						while (SceneAnimations.FindValue(TempName, TempValue))
 						{
@@ -1948,7 +1949,7 @@ namespace PigeonEngine
 			}
 		}
 
-		if (SceneAnimations.Length() == 0u)
+		if (SceneAnimations.Num() <= 0)
 		{
 			Result = CReadFileStateType::ASSIMP_READ_FILE_STATE_ERROR;
 			// TODO Do the error logging (importer.GetErrorString())

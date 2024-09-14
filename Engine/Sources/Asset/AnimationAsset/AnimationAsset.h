@@ -22,17 +22,17 @@ namespace PigeonEngine
 		EBoneAnimationCurve(const EString& InBoneName)noexcept : BoneName(InBoneName), PreState(EAnimationBehaviourType::ANIMATION_BEHAVIOUR_DEFAULT), PostState(EAnimationBehaviourType::ANIMATION_BEHAVIOUR_DEFAULT) {}
 		EBoneAnimationCurve& operator=(const EBoneAnimationCurve& Other)
 		{
-			if (PositionKeys.Length() > 0u)
+			if (PositionKeys.Num() > 0)
 			{
-				PositionKeys.Clear();
+				PositionKeys.Empty();
 			}
-			if (RotationKeys.Length() > 0u)
+			if (RotationKeys.Num() > 0)
 			{
-				RotationKeys.Clear();
+				RotationKeys.Empty();
 			}
-			if (ScalingKeys.Length() > 0u)
+			if (ScalingKeys.Num() > 0)
 			{
-				ScalingKeys.Clear();
+				ScalingKeys.Empty();
 			}
 			CopyFromOtherCurve(Other);
 			BoneName = Other.BoneName;
@@ -42,12 +42,12 @@ namespace PigeonEngine
 		}
 		BOOL32 IsValid()const
 		{
-			return ((PositionKeys.Length() > 0u) || (RotationKeys.Length() > 0u) || (ScalingKeys.Length() > 0u));
+			return ((PositionKeys.Num() > 0) || (RotationKeys.Num() > 0) || (ScalingKeys.Num() > 0));
 		}
 
-		EString									BoneName;
-		EAnimationBehaviourType					PreState;
-		EAnimationBehaviourType					PostState;
+		EString						BoneName;
+		EAnimationBehaviourType		PreState;
+		EAnimationBehaviourType		PostState;
 	};
 
 	struct ESkeletonAnimationClip
@@ -56,7 +56,7 @@ namespace PigeonEngine
 		ESkeletonAnimationClip(const ESkeletonAnimationClip& Other)noexcept
 			: ClipName(Other.ClipName), Duration(Other.Duration), TicksPerSecond(Other.TicksPerSecond)
 		{
-			if (const UINT32 AnimationCurveNum = Other.AnimationCurves.Length(); AnimationCurveNum > 0u)
+			if (const UINT32 AnimationCurveNum = Other.AnimationCurves.Num<UINT32>(); AnimationCurveNum > 0u)
 			{
 				for (UINT32 i = 0u; i < AnimationCurveNum; i++)
 				{
@@ -67,14 +67,14 @@ namespace PigeonEngine
 		ESkeletonAnimationClip(const EString& InClipName)noexcept : ClipName(InClipName), Duration(0.f), TicksPerSecond(0.f) {}
 		ESkeletonAnimationClip& operator=(const ESkeletonAnimationClip& Other)noexcept
 		{
-			if (AnimationCurves.Length() > 0u)
+			if (AnimationCurves.Num() > 0)
 			{
-				AnimationCurves.Clear();
+				AnimationCurves.Empty();
 			}
 			ClipName = Other.ClipName;
 			Duration = Other.Duration;
 			TicksPerSecond = Other.TicksPerSecond;
-			if (const UINT32 AnimationCurveNum = Other.AnimationCurves.Length(); AnimationCurveNum > 0u)
+			if (const UINT32 AnimationCurveNum = Other.AnimationCurves.Num<UINT32>(); AnimationCurveNum > 0u)
 			{
 				for (UINT32 i = 0u; i < AnimationCurveNum; i++)
 				{
@@ -85,7 +85,7 @@ namespace PigeonEngine
 		}
 		BOOL32 IsValid()const
 		{
-			const UINT32 AnimationCurveNum = AnimationCurves.Length();
+			const UINT32 AnimationCurveNum = AnimationCurves.Num();
 			BOOL32 Result = (Duration > 0.0f) && (TicksPerSecond > 0.0f) && (AnimationCurveNum > 0u);
 			if (Result)
 			{
@@ -111,20 +111,20 @@ namespace PigeonEngine
 		virtual void	ReleaseResource()override;
 	public:
 		const EString&							GetAnimationName()const;
-		UINT32									GetAnimationClipNum()const;
-		const ESkeletonAnimationClip*			GetAnimationClip(UINT32 InIndex)const;
+		INT32									GetAnimationClipNum()const;
+		const ESkeletonAnimationClip*			GetAnimationClip(INT32 InIndex)const;
 		const ESkeletonAnimationClip*			GetAnimationClip(const EString& InClipName)const;
 		const TArray<ESkeletonAnimationClip>&	GetAnimationClips()const;
-		const TMap<EString, UINT32>&				GetAnimationClipMapping()const;
+		const TMap<EString, INT32>&				GetAnimationClipMapping()const;
 	public:
 		void	RebuildWholeMapping();
 		BOOL32	AddAnimationClip(const ESkeletonAnimationClip& InClip);
-		BOOL32	RemoveAnimationClip(UINT32 InIndex);
+		BOOL32	RemoveAnimationClip(INT32 InIndex);
 		BOOL32	RemoveAnimationClip(const EString& InClipName);
 	protected:
 		EString							AnimationName;
 		TArray<ESkeletonAnimationClip>	AnimationClips;
-		TMap<EString, UINT32>				AnimationClipMapping;
+		TMap<EString, INT32>			AnimationClipMapping;
 	public:
 		ESkeletonAnimation(const EString& InName);
 		virtual ~ESkeletonAnimation();

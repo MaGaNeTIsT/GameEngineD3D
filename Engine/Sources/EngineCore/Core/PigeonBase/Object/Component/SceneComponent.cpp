@@ -78,7 +78,7 @@ namespace PigeonEngine
 			(*elem)->ParentComponent = nullptr;
 			(*elem)->Destroy();
 		}
-		ChildrenComponents.Clear();
+		ChildrenComponents.Empty();
 	}
 
 	TSharedPtr<CJsonObject> PSceneComponent::Serialize()
@@ -378,7 +378,7 @@ namespace PigeonEngine
 				TempBoundPoints
 			);
 
-			for (UINT32 i = 0u, n = TempBoundPoints.Length(); i < n; i++)
+			for (INT32 i = 0, n = TempBoundPoints.Num(); i < n; i++)
 			{
 				ResultBound.AABBMin = MinVector3(TempBoundPoints[i], ResultBound.AABBMin);
 				ResultBound.AABBMax = MaxVector3(TempBoundPoints[i], ResultBound.AABBMax);
@@ -438,7 +438,7 @@ namespace PigeonEngine
 	{
 		BOOL8 bSelectedComponent = WorldCurrentSelectedComponent == this;
 		
-		const ImGuiTreeNodeFlags TreeNodeFlag = (ChildrenComponents.Length() > 0 ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_DefaultOpen;
+		const ImGuiTreeNodeFlags TreeNodeFlag = (ChildrenComponents.Num() > 0 ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Leaf) | ImGuiTreeNodeFlags_DefaultOpen;
 		const BOOL8 bTreeNodeExpand = ImGui::TreeNodeEx(*(EString("##") + (POBJ_DEBUGNAME_GET(this)) + EString("_TreeNode")), TreeNodeFlag);
 
 		ImGui::SameLine();

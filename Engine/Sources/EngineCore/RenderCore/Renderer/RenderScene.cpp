@@ -56,16 +56,16 @@ namespace PigeonEngine
 	}
 	void RScene::UnbindErrorCheck()
 	{
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all views' mapping failed"), (ViewProxies.SceneProxyMapping.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all views failed"), (ViewProxies.SceneProxies.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all sky lights' failed"), (SkyLightProxies.SceneProxyMapping.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all sky lights failed"), (SkyLightProxies.SceneProxies.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all directional lights' mapping failed"), (DirectionalLightSceneProxies.SceneProxyMapping.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all directional lights failed"), (DirectionalLightSceneProxies.SceneProxies.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all static meshes' mapping failed"), (StaticMeshSceneProxies.SceneProxyMapping.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all static meshes failed"), (StaticMeshSceneProxies.SceneProxies.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all skeletal meshes' mapping failed"), (SkeletalMeshSceneProxies.SceneProxyMapping.Length() == 0u));
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all skeletal meshes failed"), (SkeletalMeshSceneProxies.SceneProxies.Length() == 0u));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all views' mapping failed"), (ViewProxies.SceneProxyMapping.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all views failed"), (ViewProxies.SceneProxies.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all sky lights' failed"), (SkyLightProxies.SceneProxyMapping.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all sky lights failed"), (SkyLightProxies.SceneProxies.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all directional lights' mapping failed"), (DirectionalLightSceneProxies.SceneProxyMapping.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all directional lights failed"), (DirectionalLightSceneProxies.SceneProxies.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all static meshes' mapping failed"), (StaticMeshSceneProxies.SceneProxyMapping.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all static meshes failed"), (StaticMeshSceneProxies.SceneProxies.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all skeletal meshes' mapping failed"), (SkeletalMeshSceneProxies.SceneProxyMapping.Num() == 0));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render scene clear all skeletal meshes failed"), (SkeletalMeshSceneProxies.SceneProxies.Num() == 0));
 	}
 	void RScene::AddCamera(PCameraComponent* InComponent)
 	{
@@ -447,9 +447,9 @@ namespace PigeonEngine
 			]()->void
 			{
 				TArray<Matrix4x4> TempBoneToRootMatrices;
-				if (const UINT32 MatrixNum = TempBoneToRootTransforms.Length(); MatrixNum > 0u)
+				if (const UINT32 MatrixNum = TempBoneToRootTransforms.Num<UINT32>(); MatrixNum > 0u)
 				{
-					TempBoneToRootMatrices.Resize(MatrixNum);
+					TempBoneToRootMatrices.SetNum(MatrixNum);
 					for (UINT32 MatrixIndex = 0u; MatrixIndex < MatrixNum; MatrixIndex++)
 					{
 #if (_USE_MATRIX_FOR_BONE_TO_ROOT)
@@ -541,9 +541,9 @@ namespace PigeonEngine
 					SceneProxy->UpdateRenderResource();
 					{
 						TArray<Matrix4x4> TempBoneToRootMatrices;
-						if (const UINT32 MatrixNum = TempBoneToRootTransforms.Length(); MatrixNum > 0u)
+						if (const UINT32 MatrixNum = TempBoneToRootTransforms.Num<UINT32>(); MatrixNum > 0u)
 						{
-							TempBoneToRootMatrices.Resize(MatrixNum);
+							TempBoneToRootMatrices.SetNum(MatrixNum);
 							for (UINT32 MatrixIndex = 0u; MatrixIndex < MatrixNum; MatrixIndex++)
 							{
 #if (_USE_MATRIX_FOR_BONE_TO_ROOT)

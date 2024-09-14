@@ -19,12 +19,12 @@ namespace PigeonEngine
 	static INT32 FindOctreeIndexByWorldLocation(const Vector3& InTestLocation, const Vector3& InOctreeOrigin, const TArray<ROctreeLayerInfo>& InOctreeLayerInfos, const INT32 InOctreeXAxisCellNum, const INT32 InOctreeYAxisCellNum, const INT32 InOctreeZAxisCellNum)
 	{
 		INT32 Result = -1;
-		if (InOctreeLayerInfos.Length() < 2u)
+		if (InOctreeLayerInfos.Num() < 2)
 		{
 			return Result;
 		}
 		const ROctreeLayerInfo& RootLayerInfo = InOctreeLayerInfos[0];
-		const ROctreeLayerInfo& CellLayerInfo = InOctreeLayerInfos[InOctreeLayerInfos.Length() - 1u];
+		const ROctreeLayerInfo& CellLayerInfo = InOctreeLayerInfos[InOctreeLayerInfos.Num() - 1];
 		Vector3 CellLayerExtent = CellLayerInfo.Extent * 2.f;
 		Vector3 TestLocation = InTestLocation - (InOctreeOrigin - RootLayerInfo.Extent);
 		if ((TestLocation.x < 0.f) || (TestLocation.y < 0.f) || (TestLocation.z < 0.f))
@@ -75,9 +75,9 @@ namespace PigeonEngine
 	}
 	ROctree& ROctree::operator=(const ROctree& Other)
 	{
-		Nodes.Clear();
-		Elements.Clear();
-		LayerInfos.Clear();
+		Nodes.Empty();
+		Elements.Empty();
+		LayerInfos.Empty();
 		TargetCellSize	= Other.TargetCellSize;
 		BoundOrigin		= Other.BoundOrigin;
 		BoundSize		= Other.BoundSize;
@@ -132,11 +132,11 @@ namespace PigeonEngine
 				OutOctreePerAxisCellNum[DimensionIndex] = (UINT32)(DimensionXYZ[DimensionIndex]);
 				OutOctreeAxisDepth[DimensionIndex] = (UINT32)(DimensionXYZExp[DimensionIndex] + 1);
 			}
-			if (OutOctreeLayerInfos.Length() > 0u)
+			if (OutOctreeLayerInfos.Num() > 0)
 			{
-				OutOctreeLayerInfos.Clear();
+				OutOctreeLayerInfos.Empty();
 			}
-			OutOctreeLayerInfos.Recapacity((UsedDimensionExp + 1));
+			OutOctreeLayerInfos.Reserve((UsedDimensionExp + 1));
 		}
 		{
 			INT32 LayerCellNum = 0;
@@ -149,16 +149,16 @@ namespace PigeonEngine
 				}
 				LayerCellNum += CurrentLayerCellNum;
 			}
-			if (OutOctreeElements.Length() > 0u)
+			if (OutOctreeElements.Num() > 0u)
 			{
-				OutOctreeElements.Clear();
+				OutOctreeElements.Empty();
 			}
-			OutOctreeElements.Recapacity(LayerCellNum);
-			if (OutOctreeNodes.Length() > 0u)
+			OutOctreeElements.Reserve(LayerCellNum);
+			if (OutOctreeNodes.Num() > 0u)
 			{
-				OutOctreeNodes.Clear();
+				OutOctreeNodes.Empty();
 			}
-			OutOctreeNodes.Recapacity(LayerCellNum);
+			OutOctreeNodes.Reserve(LayerCellNum);
 			for (INT32 LayerIndex = UsedDimensionExp; LayerIndex >= 0; LayerIndex--)
 			{
 				INT32 CurrentLayerDimension[3]; FLOAT DimensionExtent[3];
@@ -176,11 +176,11 @@ namespace PigeonEngine
 				Vector3 LayerExtentBase = Vector3(DimensionExtent[0], DimensionExtent[1], DimensionExtent[2]);
 				Vector3 LayerOriginBase = TempAnchor + (LayerExtentBase / 2.f);
 				Vector3 ParentLayerExtentBase = Vector3(DimensionParentExtent[0], DimensionParentExtent[1], DimensionParentExtent[2]);
-				ROctreeLayerInfo& AddInfo = OutOctreeLayerInfos.Add_Default_GetRef();
+				ROctreeLayerInfo& AddInfo = OutOctreeLayerInfos.AddDefaultGetRef();
 				AddInfo.NodeNum = CurrentLayerDimension[0] * CurrentLayerDimension[1] * CurrentLayerDimension[2];
 				AddInfo.Extent = LayerExtentBase / 2.f;
 				AddInfo.StartIndex = 0;
-				for (INT32 LayerInfoIndex = 0, LayerInfoNum = ((INT32)(OutOctreeLayerInfos.Length())) - 1; LayerInfoIndex < LayerInfoNum; LayerInfoIndex++)
+				for (INT32 LayerInfoIndex = 0, LayerInfoNum = (OutOctreeLayerInfos.Num()) - 1; LayerInfoIndex < LayerInfoNum; LayerInfoIndex++)
 				{
 					AddInfo.StartIndex += OutOctreeLayerInfos[LayerInfoIndex].NodeNum;
 				}
@@ -190,10 +190,10 @@ namespace PigeonEngine
 					{
 						for (INT32 DimensionZIndex = 0; DimensionZIndex < CurrentLayerDimension[2]; DimensionZIndex++)
 						{
-							INT32 ElementIndex = (INT32)(OutOctreeElements.Length());
-							ROctreeElement& AddElement = OutOctreeElements.Add_Default_GetRef();
-							INT32 NodeIndex = (INT32)(OutOctreeNodes.Length());
-							ROctreeNode& AddNode = OutOctreeNodes.Add_Default_GetRef();
+							INT32 ElementIndex = OutOctreeElements.Num();
+							ROctreeElement& AddElement = OutOctreeElements.AddDefaultGetRef();
+							INT32 NodeIndex = OutOctreeNodes.Num();
+							ROctreeNode& AddNode = OutOctreeNodes.AddDefaultGetRef();
 							{
 								AddElement.NodeIndex = NodeIndex;
 							}
@@ -224,7 +224,7 @@ namespace PigeonEngine
 										//TODO GetOctreeArrayIndex(OutOctreePerAxisCellNum, const FBezierGrassOctreeLayerInfo& InLayerInfo, INT32 InX, INT32 InY, INT32 InZ);
 										TempParentIndex = TempParentParentCellNum + (ParentLayerDimension[0] * ParentLayerDimension[2]) * TempParentIndexY + ParentLayerDimension[2] * TempParentIndexX + TempParentIndexZ;
 									}
-									PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Render octree's parent node index is over node array."), (TempParentIndex < ((INT32)(OutOctreeNodes.Length()))));
+									PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Render octree's parent node index is over node array."), (TempParentIndex < (OutOctreeNodes.Num())));
 									AddNode.ParentIndex = TempParentIndex;
 									OutOctreeNodes[TempParentIndex].ChildrenIndex.Add(NodeIndex);
 								}
@@ -239,16 +239,16 @@ namespace PigeonEngine
 	BOOL32 ROctree::AddPrimitive(const RPrimitiveSceneProxy* InSceneProxy)
 	{
 		BOOL32 Result = FALSE;
-		if (Nodes.Length() < 2u)
+		if (Nodes.Num() < 2u)
 		{
 			return Result;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Length() == Elements.Length()));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Num() == Elements.Num()));
 		if ((!InSceneProxy) || (!(InSceneProxy->IsRenderValid())))
 		{
 			return Result;
 		}
-		const INT32 OctreeElementNum = (INT32)(Elements.Length());
+		const INT32 OctreeElementNum = Elements.Num();
 		const Vector3& TempLocation = InSceneProxy->GetWorldLocation();
 		INT32 TempElementIndex = FindOctreeIndexByWorldLocation(TempLocation, BoundOrigin, LayerInfos, PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_X], PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_Y], PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_Z]);
 		if ((TempElementIndex < 0) || (TempElementIndex >= OctreeElementNum))
@@ -260,25 +260,25 @@ namespace PigeonEngine
 		{
 			return Result;
 		}
-		Element.PrimitiveMapping.Add(InSceneProxy->GetUniqueID(), (INT32)(Element.Primitives.Length()));
+		Element.PrimitiveMapping.Add(InSceneProxy->GetUniqueID(), Element.Primitives.Num());
 		Element.Primitives.Add(InSceneProxy);
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Length() == Element.PrimitiveMapping.Length()));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Num() == Element.PrimitiveMapping.Num()));
 		Result = TRUE;
 		return Result;
 	}
 	BOOL32 ROctree::AddPrimitives(const TArray<RPrimitiveSceneProxy*>& InPrimitives, TArray<INT32>& OutErrorPrimitives)
 	{
 		BOOL32 Result = FALSE;
-		if ((Nodes.Length() < 2u) || (InPrimitives.Length() == 0u))
+		if ((Nodes.Num() < 2) || (InPrimitives.Num() <= 0))
 		{
 			return Result;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Length() == Elements.Length()));
-		if (OutErrorPrimitives.Length() > 0u)
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Num() == Elements.Num()));
+		if (OutErrorPrimitives.Num() > 0)
 		{
-			OutErrorPrimitives.Clear();
+			OutErrorPrimitives.Empty();
 		}
-		for (INT32 PrimitiveIndex = 0, PrimitiveNum = (INT32)(InPrimitives.Length()); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
+		for (INT32 PrimitiveIndex = 0, PrimitiveNum = InPrimitives.Num(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
 		{
 			const RPrimitiveSceneProxy* TempPrimitive = InPrimitives[PrimitiveIndex];
 			if (!(AddPrimitive(TempPrimitive)))
@@ -293,16 +293,16 @@ namespace PigeonEngine
 	BOOL32 ROctree::RemovePrimitive(const RPrimitiveSceneProxy* InSceneProxy)
 	{
 		BOOL32 Result = FALSE;
-		if (Nodes.Length() < 2u)
+		if (Nodes.Num() < 2)
 		{
 			return Result;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Length() == Elements.Length()));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Num() == Elements.Num()));
 		if (!InSceneProxy)
 		{
 			return Result;
 		}
-		const INT32 OctreeElementNum = (INT32)(Elements.Length());
+		const INT32 OctreeElementNum = Elements.Num();
 		const Vector3& TempLocation = InSceneProxy->GetWorldLocation();
 		INT32 TempElementIndex = FindOctreeIndexByWorldLocation(TempLocation, BoundOrigin, LayerInfos, PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_X], PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_Y], PerAxisCellNum[EOctreeAxisType::OCTREE_AXIS_Z]);
 		if ((TempElementIndex < 0) || (TempElementIndex >= OctreeElementNum))
@@ -310,44 +310,44 @@ namespace PigeonEngine
 			return Result;
 		}
 		ROctreeElement& Element = Elements[TempElementIndex];
-		const UINT32 PrimitiveNum = Element.Primitives.Length();
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Length() == Element.PrimitiveMapping.Length()));
+		const INT32 PrimitiveNum = Element.Primitives.Num();
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Num() == Element.PrimitiveMapping.Num()));
 		if (PrimitiveNum == 0u)
 		{
 			return Result;
 		}
 		if (INT32 PrimitiveMappingValue = -1; Element.PrimitiveMapping.FindValue(InSceneProxy->GetUniqueID(), PrimitiveMappingValue))
 		{
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive index in render octree element failed."), ((PrimitiveMappingValue >= 0) && (PrimitiveMappingValue < ((INT32)PrimitiveNum))));
-			const UINT32 PrimitiveIndex = (UINT32)PrimitiveMappingValue;
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive index in render octree element failed."), ((PrimitiveMappingValue >= 0) && (PrimitiveMappingValue < PrimitiveNum)));
+			const INT32 PrimitiveIndex = PrimitiveMappingValue;
 			const ObjectIdentityType& PrimitiveID = InSceneProxy->GetUniqueID();
 			Element.PrimitiveMapping.Remove(PrimitiveID);
-			if (PrimitiveIndex != (PrimitiveNum - 1u))
+			if (PrimitiveIndex != (PrimitiveNum - 1))
 			{
 				const RPrimitiveSceneProxy* TempPrimitiveProxy = Element.Primitives[PrimitiveNum - 1u];
-				Element.Primitives[PrimitiveNum - 1u] = Element.Primitives[PrimitiveIndex];
+				Element.Primitives[PrimitiveNum - 1] = Element.Primitives[PrimitiveIndex];
 				Element.Primitives[PrimitiveIndex] = TempPrimitiveProxy;
-				Element.PrimitiveMapping[TempPrimitiveProxy->GetUniqueID()] = (INT32)PrimitiveIndex;
+				Element.PrimitiveMapping[TempPrimitiveProxy->GetUniqueID()] = PrimitiveIndex;
 			}
 			Element.Primitives.Pop();
 			Result = TRUE;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Length() == Element.PrimitiveMapping.Length()));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree element primitive container failed."), (Element.Primitives.Num() == Element.PrimitiveMapping.Num()));
 		return Result;
 	}
 	BOOL32 ROctree::RemovePrimitives(const TArray<RPrimitiveSceneProxy*>& InPrimitives, TArray<INT32>& OutErrorPrimitives)
 	{
 		BOOL32 Result = FALSE;
-		if ((Nodes.Length() < 2u) || (InPrimitives.Length() == 0u))
+		if ((Nodes.Num() < 2) || (InPrimitives.Num() <= 0))
 		{
 			return Result;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Length() == Elements.Length()));
-		if (OutErrorPrimitives.Length() > 0u)
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Num() == Elements.Num()));
+		if (OutErrorPrimitives.Num() > 0)
 		{
-			OutErrorPrimitives.Clear();
+			OutErrorPrimitives.Empty();
 		}
-		for (INT32 PrimitiveIndex = 0, PrimitiveNum = (INT32)(InPrimitives.Length()); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
+		for (INT32 PrimitiveIndex = 0, PrimitiveNum = InPrimitives.Num(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
 		{
 			const RPrimitiveSceneProxy* TempPrimitive = InPrimitives[PrimitiveIndex];
 			if (!(RemovePrimitive(TempPrimitive)))
@@ -362,18 +362,18 @@ namespace PigeonEngine
 	UINT32 ROctree::GetPrimitiveNum()const
 	{
 		UINT32 Result = 0u;
-		for (UINT32 i = 0u, n = Elements.Length(); i < n; i++)
+		for (INT32 i = 0, n = Elements.Num(); i < n; i++)
 		{
-			Result += Elements[i].Primitives.Length();
+			Result += Elements[i].Primitives.Num<UINT32>();
 		}
 		return Result;
 	}
 	void ROctree::ClearPrimitives()
 	{
-		for (UINT32 i = 0u, n = Elements.Length(); i < n; i++)
+		for (INT32 i = 0, n = Elements.Num(); i < n; i++)
 		{
-			Elements[i].PrimitiveMapping.Clear();
-			Elements[i].Primitives.Clear();
+			Elements[i].PrimitiveMapping.Empty();
+			Elements[i].Primitives.Empty();
 		}
 	}
 	BOOL32 ROctree::RebuildOctreeForWholeLevel(const EBoundAABB* InBounds)
@@ -395,24 +395,24 @@ namespace PigeonEngine
 			LevelBoundsOrigin = (UsedBounds->AABBMin + UsedBounds->AABBMax) / 2.f;
 			LevelBoundsExtent = (UsedBounds->AABBMax - UsedBounds->AABBMin) / 2.f;
 		}
-		if (LayerInfos.Length() > 0)
+		if (LayerInfos.Num() > 0)
 		{
-			LayerInfos.Clear();
+			LayerInfos.Empty();
 		}
-		if (Elements.Length() > 0)
+		if (Elements.Num() > 0)
 		{
-			Elements.Clear();
+			Elements.Empty();
 		}
-		if (Nodes.Length() > 0)
+		if (Nodes.Num() > 0)
 		{
-			Nodes.Clear();
+			Nodes.Empty();
 		}
 		TArray<UINT32> TempPerAxisCellNum, TempPerAxisDepth;
 		if (SplitOctreeInternal(LevelBoundsOrigin, LevelBoundsExtent, (TargetCellSize / 2.f), BoundOrigin, BoundSize,
 			UsedCellSize, TempPerAxisCellNum, TempPerAxisDepth, MaxDepth, LayerInfos, Elements, Nodes))
 		{
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree per axis cell num array failed."), (TempPerAxisCellNum.Length() == EOctreeAxisType::OCTREE_AXIS_COUNT));
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree per axis depth array failed."), (TempPerAxisDepth.Length() == EOctreeAxisType::OCTREE_AXIS_COUNT));
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree per axis cell num array failed."), (TempPerAxisCellNum.Num<UINT32>() == EOctreeAxisType::OCTREE_AXIS_COUNT));
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree per axis depth array failed."), (TempPerAxisDepth.Num<UINT32>() == EOctreeAxisType::OCTREE_AXIS_COUNT));
 			for (UINT32 i = 0u; i < EOctreeAxisType::OCTREE_AXIS_COUNT; i++)
 			{
 				PerAxisCellNum[i] = TempPerAxisCellNum[i];
@@ -425,33 +425,33 @@ namespace PigeonEngine
 	}
 	BOOL32 ROctree::FinalizeOctree()
 	{
-		if ((LayerInfos.Length() < 2u) || (Nodes.Length() < 2u))
+		if ((LayerInfos.Num() < 2) || (Nodes.Num() < 2))
 		{
 			return FALSE;
 		}
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Length() == Elements.Length()));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree nodes and elements num failed."), (Nodes.Num() == Elements.Num()));
 		BOOL32						Result			= FALSE;
 		TArray<BOOL32>				VisibleNodeMaps;
 		TArray<INT32>				OldNewMaps;
 		TArray<ROctreeNode>			OldNodes;
 		TArray<ROctreeElement>		OldElements;
 		TArray<ROctreeLayerInfo>	OldLayerInfos;
-		const INT32 LayerCount = (INT32)(LayerInfos.Length());
+		const INT32 LayerCount = LayerInfos.Num();
 		{
-			const UINT32 NodeNum = Nodes.Length();
-			VisibleNodeMaps.Recapacity(NodeNum);
-			OldNewMaps.Recapacity(NodeNum);
-			OldNodes.Recapacity(NodeNum);
-			OldElements.Recapacity(NodeNum);
-			OldLayerInfos.Recapacity(LayerCount);
-			for (UINT32 NodeElementIndex = 0; NodeElementIndex < NodeNum; NodeElementIndex++)
+			const INT32 NodeNum = Nodes.Num();
+			VisibleNodeMaps.Reserve(NodeNum);
+			OldNewMaps.Reserve(NodeNum);
+			OldNodes.Reserve(NodeNum);
+			OldElements.Reserve(NodeNum);
+			OldLayerInfos.Reserve(LayerCount);
+			for (INT32 NodeElementIndex = 0; NodeElementIndex < NodeNum; NodeElementIndex++)
 			{
 				VisibleNodeMaps.Add(FALSE);
 				OldNewMaps.Add(-1);
 				OldNodes.Add(Nodes[NodeElementIndex]);
 				OldElements.Add(Elements[NodeElementIndex]);
 			}
-			for (UINT32 LayerIndex = 0, LayerNum = LayerInfos.Length(); LayerIndex < LayerNum; LayerIndex++)
+			for (INT32 LayerIndex = 0, LayerNum = LayerInfos.Num(); LayerIndex < LayerNum; LayerIndex++)
 			{
 				OldLayerInfos.Add(LayerInfos[LayerIndex]);
 			}
@@ -469,7 +469,7 @@ namespace PigeonEngine
 				if (LayerIndex == (LayerCount - 1))
 				{
 					BOOL32 ElementVisible = FALSE;
-					for (INT32 PrimitiveIndex = 0, PrimitiveNum = TempElement.Primitives.Length(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
+					for (INT32 PrimitiveIndex = 0, PrimitiveNum = TempElement.Primitives.Num(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
 					{
 						if (!!(TempElement.Primitives[PrimitiveIndex]) && (TempElement.Primitives[PrimitiveIndex]->IsRenderValid()))
 						{
@@ -482,24 +482,24 @@ namespace PigeonEngine
 				}
 				else
 				{
-					for (INT32 ChildIndex = 0, ChildNum = (INT32)(TempNode.ChildrenIndex.Length()); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = TempNode.ChildrenIndex.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						TempVisible = VisibleNodeMaps[TempNode.ChildrenIndex[ChildIndex]] || TempVisible;
 					}
 				}
 			}
 		}
-		if (Nodes.Length() > 0)
+		if (Nodes.Num() > 0)
 		{
-			Nodes.Clear();
+			Nodes.Empty();
 		}
-		if (Elements.Length() > 0)
+		if (Elements.Num() > 0)
 		{
-			Elements.Clear();
+			Elements.Empty();
 		}
-		if (LayerInfos.Length() > 0)
+		if (LayerInfos.Num() > 0)
 		{
-			LayerInfos.Clear();
+			LayerInfos.Empty();
 		}
 		INT32 NodeElementCount = 0;
 		for (INT32 LayerIndex = 0; LayerIndex < LayerCount; LayerIndex++)
@@ -515,14 +515,14 @@ namespace PigeonEngine
 				BOOL32& OldVisible = VisibleNodeMaps[OldNodeElementIndex];
 				if (OldVisible)
 				{
-					const INT32 AddElementIndex = (INT32)(Elements.Length());
-					const INT32 AddNodeIndex = (INT32)(Nodes.Length());
+					const INT32 AddElementIndex = Elements.Num();
+					const INT32 AddNodeIndex = Nodes.Num();
 					PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check render octree add element and node failed."), (AddElementIndex == AddNodeIndex));
-					ROctreeElement& AddElement = Elements.Add_Default_GetRef();
-					ROctreeNode& AddNode = Nodes.Add_Default_GetRef();
+					ROctreeElement& AddElement = Elements.AddDefaultGetRef();
+					ROctreeNode& AddNode = Nodes.AddDefaultGetRef();
 					OldNewMaps[OldNodeElementIndex] = AddNodeIndex;
 					AddElement.NodeIndex = AddNodeIndex;
-					for (INT32 PrimitiveIndex = 0, PrimitiveNum = OldElement.Primitives.Length(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
+					for (INT32 PrimitiveIndex = 0, PrimitiveNum = OldElement.Primitives.Num(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
 					{
 						AddElement.Primitives.Add(OldElement.Primitives[PrimitiveIndex]);
 					}
@@ -539,7 +539,7 @@ namespace PigeonEngine
 					NodeElementNum += 1;
 				}
 			}
-			ROctreeLayerInfo& AddLayerInfo = LayerInfos.Add_Default_GetRef();
+			ROctreeLayerInfo& AddLayerInfo = LayerInfos.AddDefaultGetRef();
 			AddLayerInfo.NodeNum	= NodeElementNum;
 			AddLayerInfo.Extent		= OldLayer.Extent;
 			AddLayerInfo.StartIndex = NodeElementCount;

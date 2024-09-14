@@ -35,25 +35,25 @@ namespace PigeonEngine
 
 	static void BreakBoneRelation(ESkeleton::EBonePart& InOutDatas, USHORT InBoneIndex)
 	{
-		SHORT BoneNum = static_cast<SHORT>(InOutDatas.Length());
+		SHORT BoneNum = InOutDatas.Num<SHORT>();
 		EBoneData& BoneData = InOutDatas[InBoneIndex];
 		if (BoneData.Parent >= 0 && BoneData.Parent < BoneNum)
 		{
 			InOutDatas[BoneData.Parent].Children.Remove(static_cast<SHORT>(InBoneIndex));
 		}
 		BoneData.Parent = -2;
-		for (UINT32 ChildIndex = 0u, ChildNum = BoneData.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+		for (INT32 ChildIndex = 0, ChildNum = BoneData.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 		{
 			if (BoneData.Children[ChildIndex] >= 0 && BoneData.Children[ChildIndex] < BoneNum)
 			{
 				InOutDatas[BoneData.Children[ChildIndex]].Parent = -2;
 			}
 		}
-		BoneData.Children.Clear();
+		BoneData.Children.Empty();
 	}
 	static void ExchangeBoneData(ESkeleton::EBonePart& InOutDatas, USHORT InBoneIndex0, USHORT InBoneIndex1)
 	{
-		SHORT BoneNum = static_cast<SHORT>(InOutDatas.Length());
+		SHORT BoneNum = InOutDatas.Num<SHORT>();
 		EBoneData& BoneData0 = InOutDatas[InBoneIndex0];
 		EBoneData& BoneData1 = InOutDatas[InBoneIndex1];
 		if (BoneData0.Parent >= 0 && BoneData0.Parent < BoneNum)
@@ -66,14 +66,14 @@ namespace PigeonEngine
 			InOutDatas[BoneData1.Parent].Children.Remove(static_cast<SHORT>(InBoneIndex1));
 			InOutDatas[BoneData1.Parent].Children.Add(static_cast<SHORT>(InBoneIndex0));
 		}
-		for (UINT32 ChildIndex = 0u, ChildNum = BoneData0.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+		for (INT32 ChildIndex = 0, ChildNum = BoneData0.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 		{
 			if (BoneData0.Children[ChildIndex] >= 0 && BoneData0.Children[ChildIndex] < BoneNum)
 			{
 				InOutDatas[BoneData0.Children[ChildIndex]].Parent = static_cast<SHORT>(InBoneIndex1);
 			}
 		}
-		for (UINT32 ChildIndex = 0u, ChildNum = BoneData1.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+		for (INT32 ChildIndex = 0, ChildNum = BoneData1.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 		{
 			if (BoneData1.Children[ChildIndex] >= 0 && BoneData1.Children[ChildIndex] < BoneNum)
 			{
@@ -87,10 +87,10 @@ namespace PigeonEngine
 		TempBoneData.DefaultRotation = BoneData0.DefaultRotation;
 		TempBoneData.DefaultScaling = BoneData0.DefaultScaling;
 		TempBoneData.Parent = BoneData0.Parent;
-		if (BoneData0.Children.Length() > 0u)
+		if (BoneData0.Children.Num() > 0)
 		{
-			TempBoneData.Children.Recapacity(BoneData0.Children.Length());
-			for (UINT32 ChildIndex = 0u, ChildNum = BoneData0.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+			TempBoneData.Children.Reserve(BoneData0.Children.Num());
+			for (INT32 ChildIndex = 0, ChildNum = BoneData0.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 			{
 				if (BoneData0.Children[ChildIndex] >= 0 && BoneData0.Children[ChildIndex] < BoneNum)
 				{
@@ -104,11 +104,11 @@ namespace PigeonEngine
 		BoneData0.DefaultRotation = BoneData1.DefaultRotation;
 		BoneData0.DefaultScaling = BoneData1.DefaultScaling;
 		BoneData0.Parent = BoneData1.Parent;
-		BoneData0.Children.Clear();
-		if (BoneData1.Children.Length() > 0)
+		BoneData0.Children.Empty();
+		if (BoneData1.Children.Num() > 0)
 		{
-			BoneData0.Children.Recapacity(BoneData1.Children.Length());
-			for (UINT32 ChildIndex = 0u, ChildNum = BoneData1.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+			BoneData0.Children.Reserve(BoneData1.Children.Num());
+			for (INT32 ChildIndex = 0, ChildNum = BoneData1.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 			{
 				if (BoneData1.Children[ChildIndex] >= 0 && BoneData1.Children[ChildIndex] < BoneNum)
 				{
@@ -122,11 +122,11 @@ namespace PigeonEngine
 		BoneData1.DefaultRotation = TempBoneData.DefaultRotation;
 		BoneData1.DefaultScaling = TempBoneData.DefaultScaling;
 		BoneData1.Parent = TempBoneData.Parent;
-		BoneData1.Children.Clear();
-		if (TempBoneData.Children.Length() > 0u)
+		BoneData1.Children.Empty();
+		if (TempBoneData.Children.Num() > 0)
 		{
-			BoneData1.Children.Recapacity(TempBoneData.Children.Length());
-			for (UINT32 ChildIndex = 0u, ChildNum = TempBoneData.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+			BoneData1.Children.Reserve(TempBoneData.Children.Num());
+			for (INT32 ChildIndex = 0, ChildNum = TempBoneData.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 			{
 				BoneData1.Children.Add(TempBoneData.Children[ChildIndex]);
 			}
@@ -134,7 +134,7 @@ namespace PigeonEngine
 	}
 	static void RecursionRemoveBone(ESkeleton::EBonePart& InOutDatas, USHORT InBoneIndex)
 	{
-		USHORT CurrentBoneNum = static_cast<USHORT>(InOutDatas.Length());
+		USHORT CurrentBoneNum = InOutDatas.Num<USHORT>();
 		if (CurrentBoneNum > 0u)
 		{
 			if (InBoneIndex >= CurrentBoneNum)
@@ -149,11 +149,11 @@ namespace PigeonEngine
 			}
 
 			TArray<SHORT> TempChildren;
-			if (InOutDatas[InBoneIndex].Children.Length() > 0u)
+			if (InOutDatas[InBoneIndex].Children.Num() > 0)
 			{
 				SHORT TempBoneNum = static_cast<SHORT>(CurrentBoneNum);
-				TempChildren.Resize(InOutDatas[InBoneIndex].Children.Length());
-				for (UINT32 ChildIndex = 0u, ChildNum = InOutDatas[InBoneIndex].Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+				TempChildren.SetNum(InOutDatas[InBoneIndex].Children.Num());
+				for (INT32 ChildIndex = 0, ChildNum = InOutDatas[InBoneIndex].Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 				{
 					SHORT TempChildIndex = InOutDatas[InBoneIndex].Children[ChildIndex];
 					if (TempChildIndex >= 0 && TempChildIndex < TempBoneNum)
@@ -172,9 +172,9 @@ namespace PigeonEngine
 				InOutDatas.RemoveAt(LastBoneIndex);
 			}
 
-			if (TempChildren.Length() > 0u)
+			if (TempChildren.Num() > 0)
 			{
-				for (UINT32 ChildIndex = 0u, ChildNum = TempChildren.Length(); ChildIndex < ChildNum; ChildIndex++)
+				for (INT32 ChildIndex = 0, ChildNum = TempChildren.Num(); ChildIndex < ChildNum; ChildIndex++)
 				{
 					if (TempChildren[ChildIndex] < 0)
 					{
@@ -199,7 +199,7 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkeleton::IsResourceValid()const
 	{
-		return ((Bones.Length() > 0u) && (Bones.Length() == BoneMapping.Length()));
+		return ((Bones.Num() > 0) && (Bones.Num() == BoneMapping.Num()));
 	}
 	BOOL32 ESkeleton::InitResource()
 	{
@@ -209,8 +209,8 @@ namespace PigeonEngine
 	void ESkeleton::ReleaseResource()
 	{
 		SkeletonName = EEngineSettings::ENGINE_DEFAULT_NAME;
-		Bones.Clear();
-		BoneMapping.Clear();
+		Bones.Empty();
+		BoneMapping.Empty();
 	}
 	ESkeletonType ESkeleton::GetSkeletonType()const
 	{
@@ -236,10 +236,10 @@ namespace PigeonEngine
 	{
 		return BoneMapping;
 	}
-	UINT32 ESkeleton::GetBoneCount()const
+	INT32 ESkeleton::GetBoneCount()const
 	{
-		Check((Bones.Length() == BoneMapping.Length()));
-		return (Bones.Length());
+		Check((Bones.Num() == BoneMapping.Num()));
+		return (Bones.Num());
 	}
 	USHORT ESkeleton::GetBoneIndex(const EString& InBoneName)const
 	{
@@ -272,7 +272,7 @@ namespace PigeonEngine
 		{
 			return FALSE;
 		}
-		const UINT32 NewIndex = Bones.Length();
+		const INT32 NewIndex = Bones.Num();
 		Bones.Add(EBoneData());
 		BoneMapping.Add(InIndexData->Name, static_cast<USHORT>(NewIndex));
 		Bones[NewIndex].Index			= static_cast<SHORT>(NewIndex);
@@ -281,7 +281,7 @@ namespace PigeonEngine
 		Bones[NewIndex].DefaultRotation	= InIndexData->DefaultRotation;
 		Bones[NewIndex].DefaultScaling	= InIndexData->DefaultScaling;
 		Bones[NewIndex].Parent			= static_cast<SHORT>(InIndexData->Parent);
-		for (UINT32 ChildIndex = 0u, ChildrenNum = InIndexData->Children.Length(); ChildIndex < ChildrenNum; ChildIndex++)
+		for (INT32 ChildIndex = 0, ChildrenNum = InIndexData->Children.Num(); ChildIndex < ChildrenNum; ChildIndex++)
 		{
 			Bones[NewIndex].Children.Add(InIndexData->Children[ChildIndex]);
 		}
@@ -289,7 +289,7 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkeleton::RemoveBoneElement(const EString& InBoneName)
 	{
-		if (Bones.Length() == 0u)
+		if (Bones.Num() <= 0)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to removing bone from empty skeleton."));
 			return FALSE;
@@ -306,7 +306,7 @@ namespace PigeonEngine
 			return FALSE;
 		}
 #if (defined(_DEBUG_MODE) || defined(_DEVELOP_MODE))
-		if (TempIndex >= Bones.Length())
+		if (TempIndex >= Bones.Num<USHORT>())
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Check error that index out of bones list."));
 			return FALSE;
@@ -317,13 +317,13 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkeleton::RemoveBoneElement(USHORT InBoneIndex, EString* OutBoneName)
 	{
-		if (Bones.Length() == 0u)
+		if (Bones.Num() <= 0)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to removing bone from empty skeleton."));
 			return FALSE;
 		}
 #if (defined(_DEBUG_MODE) || defined(_DEVELOP_MODE))
-		if (InBoneIndex >= Bones.Length())
+		if (InBoneIndex >= Bones.Num<USHORT>())
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Check error that index out of bones list."));
 			return FALSE;
@@ -353,13 +353,13 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkeleton::GetBoneElement(USHORT InBoneIndex, const EBoneData*& OutBoneData)const
 	{
-		if (Bones.Length() == 0u)
+		if (Bones.Num() <= 0)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to removing bone from empty skeleton."));
 			return FALSE;
 		}
 #if (defined(_DEBUG_MODE) || defined(_DEVELOP_MODE))
-		if (InBoneIndex >= Bones.Length())
+		if (InBoneIndex >= Bones.Num<USHORT>())
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Check error that index out of bones list."));
 			return FALSE;
@@ -408,17 +408,17 @@ namespace PigeonEngine
 	}
 	void ESkeletonRenderResource::UpdateRenderResource(const TArray<Matrix4x4>& InMatrices)
 	{
-		const UINT32 InMatrixNum = InMatrices.Length();
+		const UINT32 InMatrixNum = InMatrices.Num<UINT32>();
 #if _EDITOR_ONLY
 		if ((InMatrixNum > 0u) && (InMatrixNum <= RCommonSettings::RENDER_MESH_BONE_NUM_MAX))
 #endif
 		{
 			Check((IsRenderResourceValid()), (ENGINE_ASSET_ERROR));
-			Check((BoneNum == InMatrices.Length()), (ENGINE_ASSET_ERROR));
+			Check((BoneNum == InMatrices.Num<UINT32>()), (ENGINE_ASSET_ERROR));
 			Matrix4x4* NewMatrices[ESkeletonRenderResourceType::SKELETON_RENDER_RESOURCE_COUNT];
 			NewMatrices[ESkeletonRenderResourceType::SKELETON_RENDER_RESOURCE_MATRIX] = new Matrix4x4[InMatrixNum];
 			const UINT32 MatrixSize = sizeof(Matrix4x4) * InMatrixNum;
-			::memcpy_s(NewMatrices[ESkeletonRenderResourceType::SKELETON_RENDER_RESOURCE_MATRIX], MatrixSize, InMatrices.RawData(), MatrixSize);
+			::memcpy_s(NewMatrices[ESkeletonRenderResourceType::SKELETON_RENDER_RESOURCE_MATRIX], MatrixSize, InMatrices.GetData(), MatrixSize);
 			NewMatrices[ESkeletonRenderResourceType::SKELETON_RENDER_RESOURCE_INVERSE_TRANSPOSE_MATRIX] = new Matrix4x4[InMatrixNum];
 			for (UINT32 i = 0u; i < InMatrixNum; i++)
 			{
@@ -520,13 +520,13 @@ namespace PigeonEngine
 	}
 	ESkeletonBoneMemoryPool& ESkeletonBoneMemoryPool::operator=(const ESkeletonBoneMemoryPool& Other)
 	{
-		if (BoneRelativeTransforms.Length() > 0u)
+		if (BoneRelativeTransforms.Num() > 0)
 		{
-			BoneRelativeTransforms.Clear();
+			BoneRelativeTransforms.Empty();
 		}
-		if (BoneToRootTransforms.Length() > 0u)
+		if (BoneToRootTransforms.Num() > 0)
 		{
-			BoneToRootTransforms.Clear();
+			BoneToRootTransforms.Empty();
 		}
 		RawSkeletonPtr			= Other.RawSkeletonPtr;
 		BoneRelativeTransforms	= Other.BoneRelativeTransforms;
@@ -535,28 +535,28 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkeletonBoneMemoryPool::IsValid()const
 	{
-		return ((!!RawSkeletonPtr) && (BoneRelativeTransforms.Length() > 0u) && (BoneRelativeTransforms.Length() == BoneToRootTransforms.Length()));
+		return ((!!RawSkeletonPtr) && (BoneRelativeTransforms.Num() > 0) && (BoneRelativeTransforms.Num() == BoneToRootTransforms.Num()));
 	}
 	void ESkeletonBoneMemoryPool::GenerateFromSkeleton(const ESkeleton* InRawSkeletonPtr)
 	{
-		if (BoneRelativeTransforms.Length() > 0u)
+		if (BoneRelativeTransforms.Num() > 0)
 		{
-			BoneRelativeTransforms.Clear();
+			BoneRelativeTransforms.Empty();
 		}
-		if (BoneToRootTransforms.Length() > 0u)
+		if (BoneToRootTransforms.Num() > 0)
 		{
-			BoneToRootTransforms.Clear();
+			BoneToRootTransforms.Empty();
 		}
 		RawSkeletonPtr = InRawSkeletonPtr;
 		if (!!RawSkeletonPtr)
 		{
 			const TMap<EString, USHORT>& BoneMappings = RawSkeletonPtr->GetBoneMapping();
 			const ESkeleton::EBonePart& BonePart = RawSkeletonPtr->GetBonePart();
-			Check(((BoneMappings.Length() > 0u) && (BoneMappings.Length() == BonePart.Length())));
-			const UINT32 BoneNum = BonePart.Length();
-			BoneRelativeTransforms.Resize(BoneNum);
-			BoneToRootTransforms.Resize(BoneNum);
-			for (UINT32 BoneIndex = 0u; BoneIndex < BoneNum; BoneIndex++)
+			Check(((BoneMappings.Num() > 0) && (BoneMappings.Num() == BonePart.Num())));
+			const INT32 BoneNum = BonePart.Num();
+			BoneRelativeTransforms.SetNum(BoneNum);
+			BoneToRootTransforms.SetNum(BoneNum);
+			for (INT32 BoneIndex = 0u; BoneIndex < BoneNum; BoneIndex++)
 			{
 				BoneRelativeTransforms[BoneIndex].Position	= BonePart[BoneIndex].DefaultPosition;
 				BoneRelativeTransforms[BoneIndex].Rotation	= BonePart[BoneIndex].DefaultRotation;
@@ -578,7 +578,7 @@ namespace PigeonEngine
 			TArray<EBoneTransform>& UsedToRootTransforms = BoneToRootTransforms;
 #endif
 #if _EDITOR_ONLY
-			const UINT32 UsedRelativeTransformNum = UsedRelativeTransforms.Length();
+			const INT32 UsedRelativeTransformNum = UsedRelativeTransforms.Num();
 #endif
 			BackwardRecursionBone(
 				0,
@@ -605,7 +605,7 @@ namespace PigeonEngine
 				{
 					Check((InBoneData.Index >= 0));
 #if _EDITOR_ONLY
-					Check((((UINT32)(InBoneData.Index)) < UsedRelativeTransformNum));
+					Check((((INT32)(InBoneData.Index)) < UsedRelativeTransformNum));
 #endif
 #if (_USE_MATRIX_FOR_BONE_TO_ROOT)
 					const EBoneTransform& TempRelativeBoneTransform = UsedRelativeTransforms[InBoneData.Index];
@@ -670,9 +670,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			return (BoneToRootTransforms[BoneIndex]);
@@ -700,7 +700,7 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #endif
 		{
 			return (BoneToRootTransforms[BoneIndex]);
@@ -720,9 +720,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			return (BoneRelativeTransforms[BoneIndex]);
@@ -747,9 +747,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Position = InPosition;
@@ -767,9 +767,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Rotation = InRotation;
@@ -787,9 +787,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Scaling = InScaling;
@@ -807,9 +807,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Position = InPosition;
@@ -828,9 +828,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Position = InPosition;
@@ -849,9 +849,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex].Rotation = InRotation;
@@ -870,9 +870,9 @@ namespace PigeonEngine
 	{
 		CheckSlow(IsValid());
 #if _EDITOR_ONLY
-		if (const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Length())
+		if (const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName)); BoneIndex < BoneRelativeTransforms.Num())
 #else
-		const UINT32 BoneIndex = (UINT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
+		const INT32 BoneIndex = (INT32)(RawSkeletonPtr->GetBoneIndex(InBoneName));
 #endif
 		{
 			BoneRelativeTransforms[BoneIndex] = InBoneTransform;
@@ -1248,7 +1248,7 @@ namespace PigeonEngine
 					LOAD_ASSET_MEMORY(SHORT, sizeof(SHORT), TempParentIndex);
 					LOAD_ASSET_MEMORY(USHORT, sizeof(USHORT), TempChildrenNum);
 
-					EBoneData& BoneData = BonePart.Add_Default_GetRef();
+					EBoneData& BoneData = BonePart.AddDefaultGetRef();
 
 					for (USHORT ChildIndex = 0u; ChildIndex < TempChildrenNum; ChildIndex++)
 					{
@@ -1324,7 +1324,7 @@ namespace PigeonEngine
 			Result += sizeof(USHORT);		// Bone num and bone mapping
 
 			const ESkeleton::EBonePart& BonePart = InSkeleton->GetBonePart();
-			for (UINT32 i = 0u, n = BonePart.Length(); i < n; i++)
+			for (INT32 i = 0u, n = BonePart.Num(); i < n; i++)
 			{
 				const EBoneData& BoneData = BonePart[i];
 
@@ -1335,9 +1335,9 @@ namespace PigeonEngine
 				Result += sizeof(Vector3);		// Bone data default scaling
 				Result += sizeof(SHORT);		// Bone data parent index
 				Result += sizeof(USHORT);		// Bone data children num
-				Result += sizeof(SHORT) * BoneData.Children.Length();	// Bone data children index
+				Result += sizeof(SHORT) * BoneData.Children.Num<UINT32>();	// Bone data children index
 			}
-			Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(USHORT)) * BonePart.Length();	// Bone mapping datas
+			Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(USHORT)) * BonePart.Num<UINT32>();	// Bone mapping datas
 
 			return Result;
 		};
@@ -1386,8 +1386,8 @@ namespace PigeonEngine
 
 			const ESkeleton::EBonePart&		BonePart	= InSkeletonResource->GetBonePart();
 			const TMap<EString, USHORT>&	BoneMapping = InSkeletonResource->GetBoneMapping();
-			const USHORT BoneNum = static_cast<USHORT>(BonePart.Length());	// Skeleton bone num can not greater than 65535u.
-			PE_CHECK((ENGINE_ASSET_ERROR), ("Check save skeleton asset bone num failed, bone mapping num is not match bone num."), ((BoneNum > 0u) && (BoneNum == static_cast<USHORT>(BoneMapping.Length()))));
+			const USHORT					BoneNum		= BonePart.Num<USHORT>();	// Skeleton bone num can not greater than 65535u.
+			PE_CHECK((ENGINE_ASSET_ERROR), ("Check save skeleton asset bone num failed, bone mapping num is not match bone num."), ((BoneNum > 0u) && (BoneNum == (BoneMapping.Num<USHORT>()))));
 
 			SAVE_ASSET_MEMORY(USHORT, BoneNum);
 
@@ -1403,7 +1403,7 @@ namespace PigeonEngine
 				SAVE_ASSET_MEMORY(SHORT, BondData.Parent);
 
 				const TArray<SHORT>& ChildrenDatas = BondData.Children;
-				const USHORT ChildrenNum = static_cast<USHORT>(ChildrenDatas.Length());
+				const USHORT ChildrenNum = ChildrenDatas.Num<USHORT>();
 
 				SAVE_ASSET_MEMORY(USHORT, ChildrenNum);
 

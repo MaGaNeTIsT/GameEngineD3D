@@ -194,13 +194,13 @@ namespace PigeonEngine
 
 			if (NeedAllocate && (FormatByteCount > 0u) && (RenderDataByteCount > 0u) && (FormatType != RFormatType::FORMAT_UNKNOWN))
 			{
-				TArray<BYTE> RawPixelData;
+				TArray<BYTE, UINT32> RawPixelData;
 
 				const UINT32 PixelStride = FrameWidth * FormatByteCount;
 				const UINT32 PixelByteSize = PixelStride * FrameHeight;
-				RawPixelData.Resize(PixelByteSize);
+				RawPixelData.SetNum(PixelByteSize);
 
-				WICBitmapFrameDecode->CopyPixels(NULL, PixelStride, RawPixelData.Length(), RawPixelData.RawData());
+				WICBitmapFrameDecode->CopyPixels(NULL, PixelStride, RawPixelData.Num(), RawPixelData.GetData());
 
 				const UINT32 RenderPixelStride = FrameWidth * RenderDataByteCount;
 				const UINT32 RenderPixelByteSize = RenderPixelStride * FrameHeight;
@@ -208,7 +208,7 @@ namespace PigeonEngine
 
 				if ((RenderPixelByteSize == PixelByteSize) && (!NeedSwitchRB))
 				{
-					::memcpy_s(OutputRenderPixelData, RenderPixelByteSize, RawPixelData.RawData(), PixelByteSize);
+					::memcpy_s(OutputRenderPixelData, RenderPixelByteSize, RawPixelData.GetData(), PixelByteSize);
 				}
 				else
 				{
@@ -683,7 +683,7 @@ namespace PigeonEngine
 		EString TempFullPathName(InSavePath);
 		TempFullPathName = TempFullPathName + InAssetName + EEngineSettings::ENGINE_ASSET_NAME_TYPE;
 		{
-			BOOL32 ImportPathValid = (InImportFullPathName.Length() == TextureCubeRawAssetCount) && (TempFullPathName.Length() >= 10u);
+			BOOL32 ImportPathValid = (InImportFullPathName.Num<UINT32>() == TextureCubeRawAssetCount) && (TempFullPathName.Length() >= 10u);
 			if (ImportPathValid)
 			{
 				for (UINT32 ImportIndex = 0u; ImportIndex < TextureCubeRawAssetCount; ImportIndex++)
@@ -913,7 +913,6 @@ namespace PigeonEngine
 			return nullptr;
 		}
 		PE_CHECK((ENGINE_ASSET_ERROR), ("Error read texture 2d asset file size are too small."), (ReadFileSize > (sizeof(UINT32) * 2u + sizeof(BOOL32) + sizeof(ETextureResourceProperty))));
-		BOOL32 Result = FALSE;
 		void* TempPtr = ReadFileMem;
 		ULONG RstSize = ReadFileSize;
 		EAssetType ReadAssetType = EAssetType::ASSET_TYPE_UNKNOWN;
@@ -1070,7 +1069,6 @@ namespace PigeonEngine
 			return nullptr;
 		}
 		PE_CHECK((ENGINE_ASSET_ERROR), ("Error read texture cube asset file size are too small."), (ReadFileSize > (sizeof(UINT32) * 2u + sizeof(BOOL32) + sizeof(ETextureResourceProperty))));
-		BOOL32 Result = FALSE;
 		void* TempPtr = ReadFileMem;
 		ULONG RstSize = ReadFileSize;
 		EAssetType ReadAssetType = EAssetType::ASSET_TYPE_UNKNOWN;
@@ -1237,7 +1235,7 @@ namespace PigeonEngine
 		if ((!!InImportPath) && (!!InImportName) && (!!InImportFileType))
 		{
 			constexpr UINT32 TextureCubeRawAssetCount = 6u;
-			if ((InImportPath->Length() == TextureCubeRawAssetCount) && (InImportName->Length() == TextureCubeRawAssetCount) && (InImportFileType->Length() == TextureCubeRawAssetCount))
+			if ((InImportPath->Num<UINT32>() == TextureCubeRawAssetCount) && (InImportName->Num<UINT32>() == TextureCubeRawAssetCount) && (InImportFileType->Num<UINT32>() == TextureCubeRawAssetCount))
 			{
 				TArray<EString> TempImportFullPath;
 				for (UINT32 ImportIndex = 0u; ImportIndex < TextureCubeRawAssetCount; ImportIndex++)

@@ -20,7 +20,7 @@ namespace PigeonEngine
 			if (FirstSlash1 < FirstSlash)
 				FirstSlash = FirstSlash1;
 		}
-		return (UINT)FirstSlash;
+		return (UINT32)FirstSlash;
 	}
 
 	UINT32 FindLastSlashIndex(const EString& Path)
@@ -35,7 +35,7 @@ namespace PigeonEngine
 			if (LastSlash1 > LastSlash)
 				LastSlash = LastSlash1;
 		}
-		return (UINT)LastSlash;
+		return (UINT32)LastSlash;
 	}
 
 	EString ToLower(const EString& String)
@@ -44,7 +44,7 @@ namespace PigeonEngine
 		for(UINT32 i = 0;i < String.Length();i++)
 			out.Add((CHAR)::tolower(String[i]));
 		out.Add('\0');//TODO : did this necessary?
-		return EString(out.RawData());
+		return EString(out.GetData());
 	}
 
 	EString ToUpper(const EString& String)
@@ -53,7 +53,7 @@ namespace PigeonEngine
 		for (UINT32 i = 0; i < String.Length(); i++)
 			out.Add((CHAR)::toupper(String[i]));
 		out.Add('\0');//TODO : did this necessary?
-		return EString(out.RawData());
+		return EString(out.GetData());
 	}
 
 	EString EPath::ChangeExtension(const EString& Path, const EString& Extension)

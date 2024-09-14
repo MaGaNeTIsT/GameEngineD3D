@@ -106,7 +106,7 @@ namespace PigeonEngine
 	}
 	void RViewProxy::ResetVisibilityMap()
 	{
-		VisibilityMap.Clear();
+		VisibilityMap.Empty();
 	}
 	void RViewProxy::UpdateViewSettings(const BOOL32 InIsMainView)
 	{

@@ -145,24 +145,24 @@ namespace PigeonEngine
 	}
 	RShadowTexture::~RShadowTexture()
 	{
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow texture release failed."), (ShadowMaps.Length() == 0u));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow texture release failed."), (ShadowMaps.Num() == 0));
 	}
 	void RShadowTexture::InitResources(const TArray<Vector2Int>& InTextureSizes)
 	{
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Init shadow texture's num can not smaller than 0."), (InTextureSizes.Length() > 0u));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Init shadow texture's num can not smaller than 0."), (InTextureSizes.Num() > 0));
 		RDeviceD3D11* RenderDevice = RDeviceD3D11::GetDeviceSingleton();
-		for (UINT32 i = 0u, n = InTextureSizes.Length(); i < n; i++)
+		for (INT32 i = 0, n = InTextureSizes.Num(); i < n; i++)
 		{
 			const Vector2Int TextureSize(EMath::Max(2, InTextureSizes[i].x), EMath::Max(2, InTextureSizes[i].y));
-			if (i >= TextureSizes.Length())
+			if (i >= TextureSizes.Num())
 			{
 				TextureSizes.Add(Vector2Int::Zero());
 			}
-			if (i >= ShadowMaps.Length())
+			if (i >= ShadowMaps.Num())
 			{
-				ShadowMaps.Add_Default_GetRef();
+				ShadowMaps.AddDefaultGetRef();
 			}
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow map num failed."), (TextureSizes.Length() == ShadowMaps.Length()));
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow map num failed."), (TextureSizes.Num() == ShadowMaps.Num()));
 			if ((TextureSizes[i].x == TextureSize.x) && (TextureSizes[i].y == TextureSize.y))
 			{
 				continue;
@@ -185,24 +185,24 @@ namespace PigeonEngine
 	}
 	void RShadowTexture::ClearResources()
 	{
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Clear shadow texture's num can not smaller than 0."), (ShadowMaps.Length() > 0u));
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Clear shadow texture's num can not smaller than 0."), (ShadowMaps.Num() > 0));
 		RDeviceD3D11* RenderDevice = RDeviceD3D11::GetDeviceSingleton();
-		for (UINT32 i = 0u, n = ShadowMaps.Length(); i < n; i++)
+		for (INT32 i = 0, n = ShadowMaps.Num(); i < n; i++)
 		{
 			RenderDevice->ClearDepthStencilView(ShadowMaps[i]);
 		}
 	}
 	void RShadowTexture::ReleaseResources()
 	{
-		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow map num failed."), (TextureSizes.Length() == ShadowMaps.Length()));
-		if (const UINT32 ShadowMapNum = ShadowMaps.Length(); ShadowMapNum > 0u)
+		PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check shadow map num failed."), (TextureSizes.Num() == ShadowMaps.Num()));
+		if (const INT32 ShadowMapNum = ShadowMaps.Num(); ShadowMapNum > 0)
 		{
-			for (UINT32 i = 0u; i < ShadowMapNum; i++)
+			for (INT32 i = 0; i < ShadowMapNum; i++)
 			{
 				ShadowMaps[i].ReleaseRenderResource();
 			}
-			ShadowMaps.Clear();
-			TextureSizes.Clear();
+			ShadowMaps.Empty();
+			TextureSizes.Empty();
 		}
 	}
 

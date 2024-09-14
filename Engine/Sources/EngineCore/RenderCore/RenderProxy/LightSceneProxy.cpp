@@ -96,7 +96,7 @@ namespace PigeonEngine
 		// We add view domains at first.
 		{
 			{
-				EViewDomainInfo& DomainInfo = DomainInfos.Add_Default_GetRef();
+				EViewDomainInfo& DomainInfo = DomainInfos.AddDefaultGetRef();
 
 				DomainInfo.RenderViewport.TopLeftX	= 0.f;
 				DomainInfo.RenderViewport.TopLeftY	= 0.f;
@@ -109,9 +109,9 @@ namespace PigeonEngine
 			}
 			if (IsUseCascadeShadow)
 			{
-				for (INT32 i = 0u, n = ((INT32)(CascadeShadowData->Layers.Length())) - 1; i < n; i++)
+				for (INT32 i = 0u, n = (CascadeShadowData->Layers.Num()) - 1; i < n; i++)
 				{
-					EViewDomainInfo& DomainInfo = DomainInfos.Add_Default_GetRef();
+					EViewDomainInfo& DomainInfo = DomainInfos.AddDefaultGetRef();
 
 					DomainInfo.RenderViewport.TopLeftX	= 0.f;
 					DomainInfo.RenderViewport.TopLeftY	= 0.f;
@@ -129,13 +129,13 @@ namespace PigeonEngine
 		{
 			const EFrustum& ViewProxyFrustum = InViewProxy->GetViewFrustum();
 #if _EDITOR_ONLY
-			const UINT32 DomainNum = DomainInfos.Length();
+			const INT32 DomainNum = DomainInfos.Num();
 #endif
-			for (UINT32 CascadeIndex = 0u, CascadeNum = IsUseCascadeShadow ? (CascadeShadowData->Layers.Length()) : 1u; CascadeIndex < CascadeNum; CascadeIndex++)
+			for (INT32 CascadeIndex = 0, CascadeNum = IsUseCascadeShadow ? (CascadeShadowData->Layers.Num()) : 1; CascadeIndex < CascadeNum; CascadeIndex++)
 			{
 #if _EDITOR_ONLY
-				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check cascade num of directional light failed(at least 1)."), ((CascadeNum > 0u) && (CascadeIndex < DomainNum)));
-				if ((CascadeNum == 0u) || (CascadeIndex >= DomainNum))
+				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check cascade num of directional light failed(at least 1)."), ((CascadeNum > 0) && (CascadeIndex < DomainNum)));
+				if ((CascadeNum <= 0) || (CascadeIndex >= DomainNum))
 				{
 					continue;
 				}
@@ -213,7 +213,7 @@ namespace PigeonEngine
 		{
 			if (!!CascadeShadowData)
 			{
-				return ((CascadeShadowData->Layers.Length() > 0u) && (CascadeShadowData->Layers.Length() == (CascadeShadowData->Borders.Length() + 1u)));
+				return ((CascadeShadowData->Layers.Num() > 0) && (CascadeShadowData->Layers.Num() == (CascadeShadowData->Borders.Num() + 1)));
 			}
 		}
 		return FALSE;
@@ -263,9 +263,9 @@ namespace PigeonEngine
 #endif
 			{
 #if _EDITOR_ONLY
-				const UINT32 CascadeLayerNum = InCascadeShadowData->Layers.Length();
-				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check directional light is cascade shadow but setup data is null."), (CascadeLayerNum > 0u));
-				if (CascadeLayerNum > 0u)
+				const INT32 CascadeLayerNum = InCascadeShadowData->Layers.Num();
+				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check directional light is cascade shadow but setup data is null."), (CascadeLayerNum > 0));
+				if (CascadeLayerNum > 0)
 #endif
 				{
 					CascadeShadowData->Setup(InCascadeShadowData->IsUseShadow, InCascadeShadowData->Layers, InCascadeShadowData->Borders);

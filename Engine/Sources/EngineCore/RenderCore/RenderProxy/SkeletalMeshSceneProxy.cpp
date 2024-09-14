@@ -68,12 +68,12 @@ namespace PigeonEngine
 			Check((!!SkinnedMesh), (ENGINE_RENDER_CORE_ERROR));
 			if (!!SkinnedMesh)
 			{
-				const UINT32 BoneNum = SkinnedMesh->GetBindPoseValue().Length();
+				const INT32 BoneNum = SkinnedMesh->GetBindPoseValue().Num();
 				Check((BoneNum > 0u), (ENGINE_RENDER_CORE_ERROR));
 				SkeletonRenderResource.SetBoneNum(BoneNum);
-				if ((BoneNum != BoneValues.Length()))
+				if ((BoneNum != BoneValues.Num()))
 				{
-					BoneValues.Resize(BoneNum);
+					BoneValues.SetNum(BoneNum);
 				}
 			}
 		}
@@ -100,9 +100,9 @@ namespace PigeonEngine
 				const ESkinnedMesh::EBindPoseValue& BindPoses = SkinnedMesh->GetBindPoseValue();
 				const ESkinnedMesh::EBindPoseIndex& BindPoseMappings = SkinnedMesh->GetBindPoseIndex();
 
-				Check((BindPoses.Length() <= InBoneToRootMatrices.Length()), (ENGINE_RENDER_CORE_ERROR));
-				Check(((BindPoses.Length() > 0u) && (BindPoses.Length() == BindPoseMappings.Length())), (ENGINE_RENDER_CORE_ERROR));
-				Check((BindPoses.Length() == BoneValues.Length()), (ENGINE_RENDER_CORE_ERROR));
+				Check((BindPoses.Num() <= InBoneToRootMatrices.Num()), (ENGINE_RENDER_CORE_ERROR));
+				Check(((BindPoses.Num() > 0) && (BindPoses.Num() == BindPoseMappings.Num())), (ENGINE_RENDER_CORE_ERROR));
+				Check((BindPoses.Num() == BoneValues.Num()), (ENGINE_RENDER_CORE_ERROR));
 
 #if _EDITOR_ONLY
 				BOOL32 CheckBoneUpdate = FALSE;
@@ -112,7 +112,7 @@ namespace PigeonEngine
 					const Matrix4x4* BindPosePtr = BindPoses.FindValueAsPtr(It->first);
 					const USHORT BoneIndex = Skeleton->GetBoneIndex(It->first);
 #if _EDITOR_ONLY
-					if ((!!BindPosePtr) && (BoneIndex < InBoneToRootMatrices.Length()))
+					if ((!!BindPosePtr) && (BoneIndex < InBoneToRootMatrices.Num<USHORT>()))
 #endif
 					{
 #if (_USE_MATRIX_FOR_BONE_TO_ROOT)
@@ -152,7 +152,7 @@ namespace PigeonEngine
 		MaterialParameter["_WorldMatrix"] = &TranslateUploadMatrixType(GetLocalToWorldMatrix());
 		MaterialParameter["_WorldInvMatrix"] = &TranslateUploadMatrixType(InvMat);
 		MaterialParameter["_WorldInvTransposeMatrix"] = &TranslateUploadTransposeMatrixType(InvMat);
-		MaterialParameter["_SkeletonParams"] = &TranslateUploadVectorType(Vector4Int(MeshAsset ? ((MeshAsset->GetStoragedResource()) ? (MeshAsset->GetStoragedResource()->GetBindPoseValue().Length()) : 0u) : 0u, 0u, 0u, 0u));
+		MaterialParameter["_SkeletonParams"] = &TranslateUploadVectorType(Vector4Int(MeshAsset ? ((MeshAsset->GetStoragedResource()) ? (MeshAsset->GetStoragedResource()->GetBindPoseValue().Num()) : 0) : 0, 0, 0, 0));
 		MaterialParameter.UploadBuffer();
 	}
 	void RSkeletalMeshSceneProxy::BindRenderResource()const
@@ -316,7 +316,7 @@ namespace PigeonEngine
 					const TArray<RVertexBufferResource>& SkinRenderResources = MeshRenderResource->GetSkinRenderResource();
 					//TODO We only use first skin data for rendering for now.
 #if _EDITOR_ONLY
-					BOOL32 IsSkinRenderResourcesValid = (SkinRenderResources.Length() > 0u) && ((SkinRenderResources.Length() & 0x1u) == 0u);
+					BOOL32 IsSkinRenderResourcesValid = (SkinRenderResources.Num() > 0) && ((SkinRenderResources.Num() & 0x1) == 0x0);
 					Check((IsSkinRenderResourcesValid), (ENGINE_RENDER_CORE_ERROR));
 					if (IsSkinRenderResourcesValid)
 #endif
@@ -356,7 +356,7 @@ namespace PigeonEngine
 					EVertexResourceType						VertexResource			= TranslateInputLayoutToVertexResource(Layout, ShaderSemanticSlot);
 					const TArray<RVertexBufferResource*>*	VertexRenderResources	= MeshRenderResource->GetVertexRenderResource(VertexResource);
 #if _EDITOR_ONLY
-					BOOL32 IsVertexBuffersValid = (!!VertexRenderResources) && (ShaderSemanticSlot < VertexRenderResources->Length());
+					BOOL32 IsVertexBuffersValid = (!!VertexRenderResources) && (ShaderSemanticSlot < VertexRenderResources->Num<UINT32>());
 					PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check skeletal mesh scene proxy vertex render resources is invalid."), (IsVertexBuffersValid));
 					if (IsVertexBuffersValid)
 #endif

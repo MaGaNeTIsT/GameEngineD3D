@@ -1,6 +1,9 @@
 #pragma once
 
 #include <Base/BuiltInLanguage.h>
+#include <type_traits>
+#include <initializer_list>
+//#include <functional>
 
 namespace PigeonEngine
 {
@@ -14,10 +17,8 @@ namespace PigeonEngine
 	typedef	short						SHORT;
 	typedef	unsigned short				USHORT;
 	typedef	unsigned short				WORD;
-	typedef	short						BOOL16;
 	typedef	int							INT32;
 	typedef	unsigned int				UINT32;
-	typedef	long long					BOOL64;
 	typedef	long						LONG;
 	typedef	long long					INT64;
 	typedef	unsigned long				ULONG;
@@ -30,24 +31,40 @@ namespace PigeonEngine
 
 #define PE_TEXT(__S)					__S
 
+#ifdef _FORCE_INTEGRAL_BOOL
+
 #ifdef TRUE
 #undef TRUE
-#endif
+#endif	// TRUE
 #define TRUE							(0x1)
 
 #ifdef FALSE
 #undef FALSE
-#endif
+#endif	// FALSE
 #define FALSE							(0x0)
+
+#else	// !_FORCE_INTEGRAL_BOOL
+
+#ifdef TRUE
+#undef TRUE
+#endif
+#define TRUE							(true)
+
+#ifdef FALSE
+#undef FALSE
+#endif
+#define FALSE							(false)
+
+#endif	// _FORCE_INTEGRAL_BOOL
 
 #ifdef NULL
 #undef NULL
-#endif
+#endif	// NULL
 #define NULL							(0)
 
 #ifdef RAND_MAX
 #undef RAND_MAX
-#endif
+#endif	// RAND_MAX
 #define RAND_MAX						0x7fff
 
 #define PE_ARRAYSIZE(__Array)			(static_cast<UINT32>(sizeof((__Array)) / sizeof(*((__Array)))))
@@ -107,6 +124,80 @@ namespace PigeonEngine
  */
 #define PE_FLOAT_NORMAL_THRESH			(0.0001f)
 #define PE_DOUBLE_NORMAL_THRESH			(0.0001)
+
+	//template<typename _TResult, typename... _TArguments>
+	//using TFunction = std::function<_TResult(_TArguments...)>;
+
+	template<BOOL8 _Con, typename _Ty = void>
+	using TEnableIf = std::enable_if<_Con, _Ty>;
+
+	template<BOOL8 _Con, typename _Ty = void>
+	using TEnableIfType = std::enable_if_t<_Con, _Ty>;
+
+	template<typename _Ty>
+	using TRemoveRef = std::remove_reference<_Ty>;
+
+	template<typename _Ty>
+	using TRemoveRefType = std::remove_reference_t<_Ty>;
+
+	template<typename _Ty>
+	using TRemoveExtent = std::remove_extent<_Ty>;
+
+	template<typename _Ty>
+	using TRemoveExtentType = std::remove_extent_t<_Ty>;
+
+	template<typename _Ty1, typename _Ty2>
+	using TIsSame = std::is_same<_Ty1, _Ty2>;
+
+	template<typename _Ty>
+	using TIsFundamental = std::is_fundamental<_Ty>;
+
+	template<typename _Ty>
+	using TIsArithmetic = std::is_arithmetic<_Ty>;
+
+	template<typename _Ty>
+	using TIsScalar = std::is_scalar<_Ty>;
+
+	template<typename _Ty>
+	using TIsVoid = std::is_void<_Ty>;
+
+	template<typename _Ty>
+	using TIsNullPtr = std::is_null_pointer<_Ty>;
+
+	template<typename _Ty>
+	using TIsPtr = std::is_pointer<_Ty>;
+
+	template<typename _Ty>
+	using TIsArray = std::is_array<_Ty>;
+
+	template<typename _Ty>
+	using TIsIntegral = std::is_integral<_Ty>;
+
+	template<typename _Ty>
+	using TIsUnsigned = std::is_unsigned<_Ty>;
+
+	template<typename _Ty>
+	using TIsFloating = std::is_floating_point<_Ty>;
+
+	template<typename _Ty>
+	using TIsEnum = std::is_enum<_Ty>;
+
+	template<typename _Ty>
+	using TIsUnion = std::is_union<_Ty>;
+
+	template<typename _Ty>
+	using TIsClass = std::is_class<_Ty>;
+
+	template<typename _Ty>
+	using TIsFunction = std::is_function<_Ty>;
+
+	template<typename _Ty>
+	using TInitializerList = std::initializer_list<_Ty>;
+
+#ifdef _FORCE_INTEGRAL_BOOL
+
+	typedef	short						BOOL16;
+	typedef	long long					BOOL64;
 
 	struct BOOL32
 	{
@@ -195,5 +286,13 @@ namespace PigeonEngine
 	BOOL8 operator!=(const BOOL8& A, const BOOL32& B);
 	BOOL8 operator==(const BOOL32& A, const BOOL8& B);
 	BOOL8 operator!=(const BOOL32& A, const BOOL8& B);
+
+#else	// !_FORCE_INTEGRAL_BOOL
+
+	typedef	bool	BOOL16;
+	typedef	bool	BOOL64;
+	typedef bool	BOOL32;
+
+#endif	// _FORCE_INTEGRAL_BOOL
 
 };

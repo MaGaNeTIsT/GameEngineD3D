@@ -105,7 +105,7 @@ namespace PigeonEngine
 
     void EEditorLogManager::WriteDownLogs()
     {
-        if(this->Logs.Length() == 0)
+        if (this->Logs.Num() <= 0)
         {
             return;
         }
@@ -120,7 +120,7 @@ namespace PigeonEngine
         FileName1 = FileName1.Replace(":", "-");
         FileName = FileName + FileName1 + EString("Log.txt");
         EFileHelper::SaveStringToFile(FileName, Str);
-        this->Logs.Clear();
+        this->Logs.Empty();
     }
 }
 #endif

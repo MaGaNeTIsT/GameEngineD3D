@@ -272,8 +272,8 @@ namespace PigeonEngine
 						return;
 					}
 #endif
-					ShaderParameterNames.Add(InValueName, ShaderParameters.Length());
-					EShaderParameter& ShaderParameter = ShaderParameters.Add_Default_GetRef();
+					ShaderParameterNames.Add(InValueName, ShaderParameters.Num<UINT32>());
+					EShaderParameter& ShaderParameter = ShaderParameters.AddDefaultGetRef();
 					ShaderParameter.SetupParameter<_TValueType>(TempRawData.Datas, TempOffset, __TParameterValueType, InInitValuePtr, InElementNum);
 				});
 		}

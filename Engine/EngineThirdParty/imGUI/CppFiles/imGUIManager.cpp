@@ -96,6 +96,8 @@ namespace PigeonEngine
     void CImGUIManager::InitWnd()
     {
         ImGuiIO& io = ImGui::GetIO();
+
+        //PE_CHECK((ENGINE_RENDER_CORE_ERROR), PE_TEXT("Already initialized a platform backend!"), (io.BackendPlatformUserData == nullptr));
         IM_ASSERT(io.BackendPlatformUserData == nullptr && "Already initialized a platform backend!");
 
         io.BackendPlatformUserData = (void*)(&m_WndData);

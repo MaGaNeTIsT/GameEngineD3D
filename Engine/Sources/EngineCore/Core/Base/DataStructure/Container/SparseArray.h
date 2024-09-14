@@ -294,14 +294,14 @@ namespace PigeonEngine
             EmptyID = 0u;
             DataSize = 0u;
         }
-
         PE_NODISCARD UINT32 DataLength()const
         {
             return DataSize;
         }
-        PE_NODISCARD UINT32 Length()const
+        template<typename _TOtherSizeType = INT32, TEnableIfType<TIsIntegral<_TOtherSizeType>::value, _TOtherSizeType> = 0>
+        PE_NODISCARD _TOtherSizeType Num()const
         {
-            return static_cast<UINT32>(Datas.size());
+            return static_cast<_TOtherSizeType>(Datas.size());
         }
         PE_NODISCARD _TDataType& operator[](const UINT32 InIndex)
         {

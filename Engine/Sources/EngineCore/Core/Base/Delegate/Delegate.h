@@ -92,7 +92,7 @@ namespace PigeonEngine
     template <typename ... Args>
     void TDelegateBroadcast<void(Args...)>::RemoveAll()
     {
-        ToCall.Clear();
+        ToCall.Empty();
     }
 
     template <typename ... Args>

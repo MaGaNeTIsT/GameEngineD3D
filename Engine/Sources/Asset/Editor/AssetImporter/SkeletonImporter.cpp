@@ -5,8 +5,8 @@ void PigeonEngine::ESkeletonImporter::CreateImportEditor(TArray<EString> Paths)
 {
 	NeedUpdate = TRUE;
 	InitializeEditor = FALSE;
-	m_Paths.Clear();
-	for (UINT i = 0; i < Paths.Length(); i++)
+	m_Paths.Empty();
+	for (UINT32 i = 0, n = Paths.Num<UINT32>(); i < n; i++)
 	{
 		m_Paths.Add(Paths[i].Replace("\\", "/"));
 	}
@@ -26,7 +26,7 @@ void PigeonEngine::ESkeletonImporter::UpdateImportEditor()
 
 	ImGui::Begin("Skeleton Importer", &NeedUpdate, ImGuiWindowFlags_::ImGuiWindowFlags_None);
 	{
-		for (UINT32 i = 0; i < m_Paths.Length(); i++)
+		for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 		{
 			ImGui::Text("FileName:");
 			ImGui::SameLine();
@@ -49,7 +49,7 @@ void PigeonEngine::ESkeletonImporter::UpdateImportEditor()
 			EString FileName;
 			EString FileExtension;
 
-			for (UINT32 i = 0; i < m_Paths.Length(); i++)
+			for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 			{
 				FilePath = EPath::GetFileFolderPath(m_Paths[i]) + "/";
 				FileName = EPath::GetFileNameWithoutExtension(m_Paths[i]);

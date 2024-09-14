@@ -62,13 +62,13 @@ namespace PigeonEngine
 			{
 				return FALSE;
 			}
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check scene proxy mapping and array length failed."), (SceneProxyMapping.Length() == SceneProxies.Length()));
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check scene proxy mapping and array length failed."), (SceneProxyMapping.Num() == SceneProxies.Num()));
 			const ObjectIdentityType& PrimitiveID = InSceneProxy->GetUniqueID();
 			if (SceneProxyMapping.ContainsKey(PrimitiveID))
 			{
 				return FALSE;
 			}
-			SceneProxyMapping.Add(PrimitiveID, SceneProxies.Length());
+			SceneProxyMapping.Add(PrimitiveID, SceneProxies.Num<UINT32>());
 			SceneProxies.Add(InSceneProxy);
 			return TRUE;
 		}
@@ -80,19 +80,19 @@ namespace PigeonEngine
 		/// <returns>If mappings removes scene proxy success</returns>
 		BOOL32 RemoveSceneProxy(_TProxyType* InSceneProxy)
 		{
-			if ((!InSceneProxy) || (SceneProxies.Length() == 0u))
+			if ((!InSceneProxy) || (SceneProxies.Num() == 0))
 			{
 				return FALSE;
 			}
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive mapping and array length failed."), (SceneProxyMapping.Length() == SceneProxies.Length()));
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive mapping and array length failed."), (SceneProxyMapping.Num() == SceneProxies.Num()));
 			const ObjectIdentityType& PrimitiveID = InSceneProxy->GetUniqueID();
 			UINT32 PrimitiveIndex = (UINT32)(-1);
 			if (!(SceneProxyMapping.FindValue(PrimitiveID, PrimitiveIndex)))
 			{
 				return FALSE;
 			}
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive index failed."), (PrimitiveIndex < SceneProxies.Length()));
-			if (const UINT32 LastIndex = SceneProxies.Length() - 1u; PrimitiveIndex != LastIndex)
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive index failed."), (PrimitiveIndex < SceneProxies.Num<UINT32>()));
+			if (const UINT32 LastIndex = SceneProxies.Num<UINT32>() - 1u; PrimitiveIndex != LastIndex)
 			{
 				_TProxyType* TempPrimitiveProxy = SceneProxies[LastIndex];
 				SceneProxies[LastIndex] = SceneProxies[PrimitiveIndex];
@@ -105,8 +105,8 @@ namespace PigeonEngine
 		}
 		UINT32 GetSceneProxyCount()const
 		{
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive mapping and array length failed."), (SceneProxyMapping.Length() == SceneProxies.Length()));
-			return (SceneProxies.Length());
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check primitive mapping and array length failed."), (SceneProxyMapping.Num() == SceneProxies.Num()));
+			return (SceneProxies.Num<UINT32>());
 		}
 
 		TMap<ObjectIdentityType, UINT32>	SceneProxyMapping;

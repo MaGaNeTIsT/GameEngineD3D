@@ -7,9 +7,9 @@ void PigeonEngine::ETextureImporter::CreateImportEditor(TArray<EString> Paths)
 {
 	NeedUpdate = TRUE;
 	InitializeEditor = FALSE;
-	m_Paths.Clear();
-	m_CubeMapIndex.Clear();
-	for (UINT i = 0; i < Paths.Length(); i++)
+	m_Paths.Empty();
+	m_CubeMapIndex.Empty();
+	for (UINT32 i = 0, n = Paths.Num<UINT32>(); i < n; i++)
 	{
 		m_Paths.Add(Paths[i].Replace("\\", "/"));
 		m_CubeMapIndex.Add(0);
@@ -35,7 +35,7 @@ void PigeonEngine::ETextureImporter::UpdateImportEditor()
 		::memset(CopyFileFolder, 0, EPath::MAX_PATH_LENGTH);
 		::memset(CubeMapName, 0, EPath::MAX_PATH_LENGTH);
 		CheckCopyFile = FALSE;
-		CubeMap.Clear();
+		CubeMap.Empty();
 		//TODO : does this necessary?
 		//const CHAR* cube_items[] = { "+X", "-X", "+Y", "-Y", "+Z", "-Z" };
 		//for (UINT32 i = 0; i < m_Paths.Length(); i++)
@@ -64,7 +64,7 @@ void PigeonEngine::ETextureImporter::UpdateImportEditor()
 		}
 		if (type_item_current_idx == 0)//Texture2D
 		{
-			for (UINT32 i = 0; i < m_Paths.Length(); i++)
+			for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 			{
 				ImGui::Text("FileName:");
 				ImGui::SameLine();
@@ -76,8 +76,8 @@ void PigeonEngine::ETextureImporter::UpdateImportEditor()
 		}
 		else if (type_item_current_idx == 1)//TextureCube
 		{
-			CubeMap.Clear();
-			for (UINT32 i = 0; i < m_Paths.Length(); i++)
+			CubeMap.Empty();
+			for (INT32 i = 0, p = m_Paths.Num(); i < p; i++)
 			{
 				const CHAR* cube_combo_preview_value = cube_items[m_CubeMapIndex[i]];
 				CubeMap.Add(cube_combo_preview_value, m_Paths[i]);
@@ -86,7 +86,7 @@ void PigeonEngine::ETextureImporter::UpdateImportEditor()
 				EString CubeType = EString("Cube Type ") + EString((CHAR*)&(ToChar));
 				if (ImGui::BeginCombo(*CubeType, cube_combo_preview_value))
 				{
-					for (INT32 n = 0; n < IM_ARRAYSIZE(cube_items); n++)
+					for (INT32 n = 0, u = PE_ARRAYSIZE(cube_items); n < u; n++)
 					{
 						const BOOL8 is_selected = (m_CubeMapIndex[i] == n);
 						if (ImGui::Selectable(cube_items[n], is_selected))
@@ -126,7 +126,7 @@ void PigeonEngine::ETextureImporter::UpdateImportEditor()
 			//Handle Path.
 			if (type_item_current_idx == 0)//Texture2D
 			{
-				for (UINT32 i = 0; i < m_Paths.Length(); i++)
+				for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 				{
 					const ETexture2DAsset* Asset = NULL;
 					EString FileName = EPath::GetFileNameWithoutExtension(m_Paths[i]);

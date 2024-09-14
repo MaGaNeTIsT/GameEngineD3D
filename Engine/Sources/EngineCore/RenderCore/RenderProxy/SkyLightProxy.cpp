@@ -293,7 +293,7 @@ namespace PigeonEngine
 				EVertexResourceType						VertexResource			= TranslateInputLayoutToVertexResource(Layout, ShaderSemanticSlot);
 				const TArray<RVertexBufferResource*>*	VertexRenderResources	= MeshRenderResource->GetVertexRenderResource(VertexResource);
 #if _EDITOR_ONLY
-				if ((!!VertexRenderResources) && (ShaderSemanticSlot < VertexRenderResources->Length()))
+				if ((!!VertexRenderResources) && (ShaderSemanticSlot < VertexRenderResources->Num<UINT32>()))
 #endif
 				{
 					const RVertexBufferResource* VertexRenderResource = (*VertexRenderResources)[ShaderSemanticSlot];

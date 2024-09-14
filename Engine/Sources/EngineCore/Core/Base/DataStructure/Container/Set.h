@@ -24,13 +24,13 @@ namespace PigeonEngine
         const T&    operator[](const UINT32& Index)const;
 
         BOOL32 Add     (const T& Element);
-        T&   Get     (const UINT32& Index) const;
+        T&   GetRef     (const UINT32& Index) const;
         // Find the index of given Element, return set's Length if the Element doesn't exist.
         UINT32 Find    (const T& Element) const;
         BOOL32 Contains(const T& Element) const;
         void RemoveAt(const UINT32& Index);
         void Remove  (const T& Element);
-        void Clear   ();
+        void Empty   ();
         void Append(const TSet<T>& Other);
         
         typename TIterator Begin()
@@ -59,9 +59,10 @@ namespace PigeonEngine
         typename TIterator      begin(){return Elements.begin();}
         typename TIterator      end(){return Elements.end();}
         
-        UINT32 Length()const
+        template<typename _TOtherSizeType = INT32, TEnableIfType<TIsIntegral<_TOtherSizeType>::value, _TOtherSizeType> = 0>
+        PE_NODISCARD _TOtherSizeType Num()const
         {
-            return static_cast<UINT32>(Elements.size());
+            return static_cast<_TOtherSizeType>(Elements.size());
         }
         UINT32 Last    ()const;
 
@@ -114,7 +115,7 @@ namespace PigeonEngine
     }
 
     template <typename T>
-    T& TSet<T>::Get(const UINT32& Index) const
+    T& TSet<T>::GetRef(const UINT32& Index) const
     {
         PE_CHECK(ENGINE_SET_ERROR, "Set has no such index", Index > Length());
         return Elements[Index];
@@ -152,7 +153,7 @@ namespace PigeonEngine
     template <typename T>
     void TSet<T>::RemoveAt(const UINT32& Index)
     {
-        if(Index > Length())
+        if (Index > Num<UINT32>())
         {
             return;
         }
@@ -173,7 +174,7 @@ namespace PigeonEngine
     }
 
     template <typename T>
-    void TSet<T>::Clear()
+    void TSet<T>::Empty()
     {
         Elements.clear();
     }

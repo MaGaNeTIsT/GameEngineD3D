@@ -26,9 +26,9 @@ namespace PigeonEngine
 			: Index(Other.Index), Name(Other.Name), DefaultPosition(Other.DefaultPosition)
 			, DefaultRotation(Other.DefaultRotation), DefaultScaling(Other.DefaultScaling), Parent(Other.Parent)
 		{
-			if (Other.Children.Length() > 0u)
+			if (Other.Children.Num() > 0)
 			{
-				for (UINT32 i = 0u, n = Other.Children.Length(); i < n; i++)
+				for (UINT32 i = 0u, n = Other.Children.Num<UINT32>(); i < n; i++)
 				{
 					Children.Add(Other.Children[i]);
 				}
@@ -41,16 +41,16 @@ namespace PigeonEngine
 		}
 		EBoneData& operator=(const EBoneData& Other)
 		{
-			Children.Clear();
+			Children.Empty();
 			Index			= Other.Index;
 			Name			= Other.Name;
 			DefaultPosition	= Other.DefaultPosition;
 			DefaultRotation	= Other.DefaultRotation;
 			DefaultScaling	= Other.DefaultScaling;
 			Parent			= Other.Parent;
-			if (Other.Children.Length() > 0u)
+			if (Other.Children.Num() > 0)
 			{
-				for (UINT32 i = 0u, n = Other.Children.Length(); i < n; i++)
+				for (UINT32 i = 0u, n = Other.Children.Num<UINT32>(); i < n; i++)
 				{
 					Children.Add(Other.Children[i]);
 				}
@@ -118,7 +118,7 @@ namespace PigeonEngine
 		const EBonePart&				GetBonePart()const;
 		TMap<EString, USHORT>&			GetBoneMapping();
 		const TMap<EString, USHORT>&	GetBoneMapping()const;
-		UINT32							GetBoneCount()const;
+		INT32							GetBoneCount()const;
 		USHORT							GetBoneIndex(const EString& InBoneName)const;
 	public:
 		BOOL32	AddBoneElement(EBoneData* InIndexData);
@@ -222,9 +222,9 @@ namespace PigeonEngine
 			if (InCond(CurrentBoneData, InValue))
 			{
 				_TCustomType NewValue = InFunc(CurrentBoneData, InValue);
-				if (CurrentBoneData.Children.Length() > 0u)
+				if (CurrentBoneData.Children.Num() > 0)
 				{
-					for (UINT32 ChildIndex = 0u, ChildNum = CurrentBoneData.Children.Length(); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = CurrentBoneData.Children.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						BackwardRecursionBone<_TCustomType, _TLambdaType, _TConditionType>(CurrentBoneData.Children[ChildIndex], NewValue, InFunc, InCond);
 					}

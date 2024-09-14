@@ -340,16 +340,16 @@ namespace PigeonEngine
 		{
 			for (UINT32 i = 0u, n = RDebugWireframeType::DEBUG_WIREFRAME_ENGINE_COUNT - 1u; i < n; i++)
 			{
-				PrimitiveTransforms[i].Clear();
-				PrimitiveColors[i].Clear();
+				PrimitiveTransforms[i].Empty();
+				PrimitiveColors[i].Empty();
 			}
 			for (auto It = CustomPrimitiveTransforms.Begin(); It != CustomPrimitiveTransforms.End(); It++)
 			{
-				It->second.Clear();
+				It->second.Empty();
 			}
 			for (auto It = CustomPrimitiveColors.Begin(); It != CustomPrimitiveColors.End(); It++)
 			{
-				It->second.Clear();
+				It->second.Empty();
 			}
 		}
 
@@ -362,9 +362,9 @@ namespace PigeonEngine
 #if _DEBUG_MODE
 			for (UINT32 i = 0u, n = RDebugWireframeType::DEBUG_WIREFRAME_ENGINE_COUNT - 1u; i < n; i++)
 			{
-				Check(PrimitiveTransforms[i].Length() == PrimitiveColors[i].Length());
+				Check(PrimitiveTransforms[i].Num() == PrimitiveColors[i].Num());
 			}
-			Check(CustomPrimitiveTransforms.Length() == CustomPrimitiveColors.Length());
+			Check(CustomPrimitiveTransforms.Num() == CustomPrimitiveColors.Num());
 #endif
 		}
 
@@ -391,9 +391,9 @@ namespace PigeonEngine
 
 				const TArray<Matrix4x4>& TempTransforms = PrimitiveTransforms[i];
 				const TArray<Color4>& TempColors = PrimitiveColors[i];
-				Check(TempTransforms.Length() == TempColors.Length());
+				Check(TempTransforms.Num() == TempColors.Num());
 
-				if (const UINT32 InstanceNum = TempTransforms.Length(); InstanceNum > 0u)
+				if (const UINT32 InstanceNum = TempTransforms.Num<UINT32>(); InstanceNum > 0u)
 				{
 					Matrix4x4* TempDataTransforms = new Matrix4x4[PrimitiveDrawableMaxNum];
 					Color4* TempDataColor4s = new Color4[PrimitiveDrawableMaxNum];
@@ -424,7 +424,7 @@ namespace PigeonEngine
 
 				const TArray<Matrix4x4>& CustomTransforms = (It->second);
 				TArray<Color4>* CustomColors = CustomPrimitiveColors.FindValueAsPtr(Name);
-				Check(((!!CustomColors) && (CustomColors->Length() == CustomTransforms.Length())));
+				Check(((!!CustomColors) && (CustomColors->Num() == CustomTransforms.Num())));
 
 				if (!(CustomPrimitiveTransformsBuffer.ContainsKey(Name)))
 				{
@@ -439,7 +439,7 @@ namespace PigeonEngine
 					RenderDevice->CreateStructuredBuffer((*Buffer), RStructuredBufferDesc(sizeof(Color4), PrimitiveDrawableMaxNum));
 				}
 
-				if (const UINT32 InstanceNum = CustomTransforms.Length(); InstanceNum > 0u)
+				if (const UINT32 InstanceNum = CustomTransforms.Num<UINT32>(); InstanceNum > 0u)
 				{
 					RStructuredBuffer* TransformsBuffer = CustomPrimitiveTransformsBuffer.FindValueAsPtr(Name);
 					RStructuredBuffer* ColorsBuffer = CustomPrimitiveColorsBuffer.FindValueAsPtr(Name);

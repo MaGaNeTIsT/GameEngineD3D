@@ -5,9 +5,9 @@ void PigeonEngine::EMeshImporter::CreateImportEditor(TArray<EString> Paths)
 {
 	NeedUpdate = TRUE;
 	InitializeEditor = FALSE;
-	m_Paths.Clear();
-	m_MeshCombineCheck.Clear();
-	for (UINT i = 0; i < Paths.Length(); i++)
+	m_Paths.Empty();
+	m_MeshCombineCheck.Empty();
+	for (UINT32 i = 0, n = Paths.Num<UINT32>(); i < n; i++)
 	{
 		m_Paths.Add(Paths[i].Replace("\\", "/"));
 		m_MeshCombineCheck.Add(FALSE);
@@ -48,7 +48,7 @@ void PigeonEngine::EMeshImporter::UpdateImportEditor()
 			}
 			ImGui::EndCombo();
 		}
-		for (UINT32 i = 0; i < m_Paths.Length(); i++)
+		for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 		{
 			ImGui::Text("FileName:");
 			ImGui::SameLine();
@@ -80,7 +80,7 @@ void PigeonEngine::EMeshImporter::UpdateImportEditor()
 			EString FileExtension;
 			if (type_item_current_idx == 0)//Static Mesh
 			{
-				for (UINT32 i = 0; i < m_Paths.Length(); i++)
+				for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 				{
 					FilePath = EPath::GetFileFolderPath(m_Paths[i]) + "/";
 					FileName = EPath::GetFileNameWithoutExtension(m_Paths[i]);
@@ -101,7 +101,7 @@ void PigeonEngine::EMeshImporter::UpdateImportEditor()
 			}
 			else if (type_item_current_idx == 1)//Skeletal Mesh
 			{
-				for (UINT32 i = 0; i < m_Paths.Length(); i++)
+				for (UINT32 i = 0, n = m_Paths.Num<UINT32>(); i < n; i++)
 				{
 					FilePath = EPath::GetFileFolderPath(m_Paths[i]) + "/";
 					FileName = EPath::GetFileNameWithoutExtension(m_Paths[i]);

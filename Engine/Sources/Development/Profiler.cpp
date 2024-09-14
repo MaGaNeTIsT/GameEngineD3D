@@ -74,7 +74,7 @@ namespace PigeonEngine
 	}
 	void EProfiler::ClearTraces()
 	{
-		Traces.Clear();
+		Traces.Empty();
 	}
 	UINT32 EProfiler::AddNewTrace(const CHAR* InTraceName)
 	{

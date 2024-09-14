@@ -283,23 +283,23 @@ namespace PigeonEngine
 		, VertexLayout(Other.VertexLayout)
 		, Indices(Other.Indices)
 	{
-		for (UINT32 i = 0u, n = Other.Vertices.Length(); i < n; i++)
+		for (INT32 i = 0, n = Other.Vertices.Num(); i < n; i++)
 		{
 			const EVertexData& OtherVertex = Other.Vertices[i];
 			Vertices.Add(EVertexData());
-			Vertices[Vertices.Length() - 1u] = OtherVertex;
+			Vertices[Vertices.Num() - 1] = OtherVertex;
 		}
-		for (UINT32 i = 0u, n = Other.Submeshes.Length(); i < n; i++)
+		for (INT32 i = 0, n = Other.Submeshes.Num(); i < n; i++)
 		{
 			const ESubmeshData& OtherSubmesh = Other.Submeshes[i];
 			Submeshes.Add(ESubmeshData());
-			Submeshes[Submeshes.Length() - 1u] = OtherSubmesh;
+			Submeshes[Submeshes.Num() - 1] = OtherSubmesh;
 		}
 	}
 	EMesh::~EMesh()
 	{
 		Indices.Release();
-		for (UINT32 Index = 0u, Length = Vertices.Length(); Index < Length; Index++)
+		for (INT32 Index = 0, Length = Vertices.Num(); Index < Length; Index++)
 		{
 			Vertices[Index].Release();
 		}
@@ -311,10 +311,10 @@ namespace PigeonEngine
 	}
 	BOOL32 EMesh::IsResourceValid()const
 	{
-		if (Vertices.Length() > 0u)
+		if (Vertices.Num() > 0)
 		{
 			BOOL32 Result = FALSE;
-			for (UINT32 i = 0u, n = Vertices.Length(); i < n; i++)
+			for (INT32 i = 0, n = Vertices.Num(); i < n; i++)
 			{
 				const EVertexData& TempVertexData = Vertices[i];
 				Result = Result || ((TempVertexData.ElementNum > 3u) && (TempVertexData.Stride > 0u) && (!!(TempVertexData.Datas)));
@@ -331,12 +331,12 @@ namespace PigeonEngine
 	void EMesh::ReleaseResource()
 	{
 		Indices.Release();
-		for (UINT32 Index = 0u, Length = Vertices.Length(); Index < Length; Index++)
+		for (INT32 Index = 0, Length = Vertices.Num(); Index < Length; Index++)
 		{
 			Vertices[Index].Release();
 		}
-		Vertices.Clear();
-		Submeshes.Clear();
+		Vertices.Empty();
+		Submeshes.Empty();
 		VertexLayout = 0u;
 	}
 	BOOL32 EMesh::CheckVertexLayoutPartExist(UINT32 InVertexLayoutType, UINT32 InPartIndex)const
@@ -504,7 +504,7 @@ namespace PigeonEngine
 			return FALSE;
 		}
 		UINT32 FindIndex = 0u;
-		if (Vertices.Length() > 0u)
+		if (Vertices.Num() > 0)
 		{
 			FindIndex = EMesh::MeshVertexLayoutPartMaxNum;
 			for (UINT32 Index = 0u; Index < EMesh::MeshVertexLayoutPartMaxNum; Index++)
@@ -524,7 +524,7 @@ namespace PigeonEngine
 		if (!CheckVertexLayoutPartExist(InLayoutType, FindIndex))
 		{
 			SetVertexLayoutPartExistInternal(InLayoutType, FindIndex, TRUE);
-			const UINT32 NewElementIndex = Vertices.Length();
+			const UINT32 NewElementIndex = Vertices.Num<UINT32>();
 			Vertices.Add(EVertexData());
 			Vertices[NewElementIndex].PartType		= (InLayoutType << FindIndex);
 			Vertices[NewElementIndex].ElementNum	= InVertexData->ElementNum;
@@ -552,7 +552,7 @@ namespace PigeonEngine
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Mesh remove vertex layout type check failed(wrong type)."));
 			return FALSE;
 		}
-		if ((Vertices.Length() > 0u) && CheckVertexLayoutPartExist(InLayoutType, InLayoutIndex))
+		if ((Vertices.Num() > 0) && CheckVertexLayoutPartExist(InLayoutType, InLayoutIndex))
 		{
 			auto MoveVertexData = [](EVertexData& InA, EVertexData& InB)->void
 			{
@@ -571,12 +571,12 @@ namespace PigeonEngine
 				InB.Datas = TempData.Datas;
 			};
 			const UINT32 DeleteLayoutType = InLayoutType << InLayoutIndex;
-			for (UINT32 Index = 0u, Length = Vertices.Length(); Index < Length; Index++)
+			for (INT32 Index = 0, Length = Vertices.Num(); Index < Length; Index++)
 			{
 				if (Vertices[Index].PartType == DeleteLayoutType)
 				{
 					Vertices[Index].Release();
-					if (Index != (Length - 1u))
+					if (Index != (Length - 1))
 					{
 						MoveVertexData(Vertices[Index], Vertices[Length - 1u]);
 					}
@@ -604,10 +604,10 @@ namespace PigeonEngine
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Mesh get vertex layout type check failed(wrong type)."));
 			return FALSE;
 		}
-		if ((Vertices.Length() > 0u) && CheckVertexLayoutPartExist(InLayoutType, InLayoutIndex))
+		if ((Vertices.Num() > 0) && CheckVertexLayoutPartExist(InLayoutType, InLayoutIndex))
 		{
 			const UINT32 DeleteLayoutType = InLayoutType << InLayoutIndex;
-			for (UINT32 Index = 0u, Length = Vertices.Length(); Index < Length; Index++)
+			for (INT32 Index = 0, Length = Vertices.Num(); Index < Length; Index++)
 			{
 				if (Vertices[Index].PartType == DeleteLayoutType)
 				{
@@ -616,8 +616,8 @@ namespace PigeonEngine
 				}
 			}
 		}
-#if _DEBUG_MODE
-		//PE_FAILED((ENGINE_ASSET_ERROR), ("Try to get not exist vertex."));
+#if (false && _DEBUG_MODE)
+		PE_FAILED((ENGINE_ASSET_ERROR), ("Try to get not exist vertex."));
 #endif
 		return FALSE;
 	}
@@ -628,7 +628,7 @@ namespace PigeonEngine
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to add invalid submesh."));
 			return FALSE;
 		}
-		const UINT32 NewIndex = Submeshes.Length();
+		const UINT32 NewIndex = Submeshes.Num<UINT32>();
 		Submeshes.Add(ESubmeshData());
 		Submeshes[NewIndex].StartVertex	= InSubmeshData->StartVertex;
 		Submeshes[NewIndex].VertexNum	= InSubmeshData->VertexNum;
@@ -642,7 +642,7 @@ namespace PigeonEngine
 	}
 	BOOL32 EMesh::RemoveSubmesh(UINT32 InSubmeshIndex)
 	{
-		if (UINT32 TempSubmeshNum = Submeshes.Length(); (TempSubmeshNum == 0u) || (InSubmeshIndex >= Submeshes.Length()))
+		if (UINT32 TempSubmeshNum = Submeshes.Num<UINT32>(); (TempSubmeshNum == 0u) || (InSubmeshIndex >= Submeshes.Num<UINT32>()))
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to remove not exist submesh."));
 			return FALSE;
@@ -652,7 +652,7 @@ namespace PigeonEngine
 	}
 	BOOL32 EMesh::GetSubmesh(UINT32 InSubmeshIndex, const ESubmeshData*& OutSubmeshData)const
 	{
-		if (UINT32 TempSubmeshNum = Submeshes.Length(); (TempSubmeshNum == 0u) || (InSubmeshIndex >= Submeshes.Length()))
+		if (UINT32 TempSubmeshNum = Submeshes.Num<UINT32>(); (TempSubmeshNum == 0u) || (InSubmeshIndex >= Submeshes.Num<UINT32>()))
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to get not exist submesh."));
 			return FALSE;
@@ -666,11 +666,11 @@ namespace PigeonEngine
 	}
 	void EMesh::UnsafeReleaseVertexPart()
 	{
-		for (UINT32 i = 0u, n = Vertices.Length(); i < n; i++)
+		for (INT32 i = 0, n = Vertices.Num(); i < n; i++)
 		{
 			Vertices[i].Release();
 		}
-		Vertices.Clear();
+		Vertices.Empty();
 	}
 	void EMesh::CopyBaseDataFromOtherInternal(const EMesh& Other)
 	{
@@ -681,30 +681,30 @@ namespace PigeonEngine
 		Indices.Release();
 		Indices = Other.Indices;
 
-		if (Vertices.Length() > 0u)
+		if (Vertices.Num() > 0)
 		{
-			for (UINT32 i = 0u, n = Vertices.Length(); i < n; i++)
+			for (INT32 i = 0, n = Vertices.Num(); i < n; i++)
 			{
 				Vertices[i].Release();
 			}
-			Vertices.Clear();
+			Vertices.Empty();
 		}
-		for (UINT32 i = 0u, n = Other.Vertices.Length(); i < n; i++)
+		for (INT32 i = 0, n = Other.Vertices.Num(); i < n; i++)
 		{
 			const EVertexData& OtherVertex = Other.Vertices[i];
 			Vertices.Add(EVertexData());
-			Vertices[Vertices.Length() - 1u] = OtherVertex;
+			Vertices[Vertices.Num() - 1] = OtherVertex;
 		}
 
-		if (Submeshes.Length() > 0u)
+		if (Submeshes.Num() > 0)
 		{
-			Submeshes.Clear();
+			Submeshes.Empty();
 		}
-		for (UINT32 i = 0u, n = Other.Submeshes.Length(); i < n; i++)
+		for (INT32 i = 0, n = Other.Submeshes.Num(); i < n; i++)
 		{
 			const ESubmeshData& OtherSubmesh = Other.Submeshes[i];
 			Submeshes.Add(ESubmeshData());
-			Submeshes[Submeshes.Length() - 1u] = OtherSubmesh;
+			Submeshes[Submeshes.Num() - 1] = OtherSubmesh;
 		}
 	}
 	void EMesh::SetVertexLayoutPartExistInternal(UINT32 InVertexLayoutType, UINT32 InPartIndex, BOOL32 InIsExist, BOOL32* OutIsAlreadyExist)
@@ -795,11 +795,11 @@ namespace PigeonEngine
 		{
 			BindPoseIndex.Add(It->first, It->second);
 		}
-		for (UINT32 i = 0u, n = Other.Skins.Length(); i < n; i++)
+		for (INT32 i = 0, n = Other.Skins.Num(); i < n; i++)
 		{
 			const ESkinData& OtherSkin = Other.Skins[i];
 			Skins.Add(ESkinData());
-			Skins[Skins.Length() - 1u] = OtherSkin;
+			Skins[Skins.Num() - 1] = OtherSkin;
 		}
 	}
 	ESkinnedMesh::ESkinnedMesh(const EString& InMeshName)
@@ -808,25 +808,25 @@ namespace PigeonEngine
 	}
 	ESkinnedMesh::~ESkinnedMesh()
 	{
-		for (UINT32 Index = 0u, Length = Skins.Length(); Index < Length; Index++)
+		for (INT32 Index = 0u, Length = Skins.Num(); Index < Length; Index++)
 		{
 			Skins[Index].Release();
 		}
 	}
 	BOOL32 ESkinnedMesh::IsResourceValid()const
 	{
-		if (Skins.Length() > 0u)
+		if (Skins.Num() > 0)
 		{
 			BOOL32 Result = FALSE;
-			for (UINT32 Index = 0u, Length = Skins.Length(); Index < Length; Index++)
+			for (INT32 Index = 0u, Length = Skins.Num(); Index < Length; Index++)
 			{
 				Result = Result ||
 					(
 						(Skins[Index].ElementNum > 3u) &&
 						(Skins[Index].Stride > 0u) &&
-						(BindPoseIndex.Length() > 0u) &&
-						(BindPoseIndex.Length() <= RCommonSettings::RENDER_MESH_BONE_NUM_MAX) &&
-						(BindPoseIndex.Length() == BindPoseValue.Length()) &&
+						(BindPoseIndex.Num() > 0) &&
+						(BindPoseIndex.Num<USHORT>() <= RCommonSettings::RENDER_MESH_BONE_NUM_MAX) &&
+						(BindPoseIndex.Num() == BindPoseValue.Num()) &&
 						(EffectBoneNum > 0u) &&
 						(EffectBoneNum <= EEngineSettings::ENGINE_BONE_WEIGHT_NUM_MAXIMUM)
 						);
@@ -842,7 +842,7 @@ namespace PigeonEngine
 	}
 	void ESkinnedMesh::ReleaseResource()
 	{
-		for (UINT32 Index = 0u, Length = Skins.Length(); Index < Length; Index++)
+		for (INT32 Index = 0, Length = Skins.Num(); Index < Length; Index++)
 		{
 			Skins[Index].Release();
 		}
@@ -852,18 +852,18 @@ namespace PigeonEngine
 	{
 		CopyBaseDataFromOtherInternal(Other);
 
-		if (BindPoseValue.Length() > 0u)
+		if (BindPoseValue.Num() > 0)
 		{
-			BindPoseValue.Clear();
+			BindPoseValue.Empty();
 		}
 		for (auto It = Other.BindPoseValue.Begin(); It != Other.BindPoseValue.End(); It++)
 		{
 			BindPoseValue.Add(It->first, It->second);
 		}
 
-		if (BindPoseIndex.Length() > 0u)
+		if (BindPoseIndex.Num() > 0)
 		{
-			BindPoseIndex.Clear();
+			BindPoseIndex.Empty();
 		}
 		for (auto It = Other.BindPoseIndex.Begin(); It != Other.BindPoseIndex.End(); It++)
 		{
@@ -872,19 +872,19 @@ namespace PigeonEngine
 
 		EffectBoneNum = Other.EffectBoneNum;
 
-		if (Skins.Length() > 0u)
+		if (Skins.Num() > 0)
 		{
-			for (UINT32 i = 0u, n = Skins.Length(); i < n; i++)
+			for (INT32 i = 0, n = Skins.Num(); i < n; i++)
 			{
 				Skins[i].Release();
 			}
-			Skins.Clear();
+			Skins.Empty();
 		}
-		for (UINT32 i = 0u, n = Other.Skins.Length(); i < n; i++)
+		for (INT32 i = 0u, n = Other.Skins.Num(); i < n; i++)
 		{
 			const ESkinData& OtherSkin = Other.Skins[i];
 			Skins.Add(ESkinData());
-			Skins[Skins.Length() - 1u] = OtherSkin;
+			Skins[Skins.Num() - 1] = OtherSkin;
 		}
 
 		return (*this);
@@ -911,23 +911,23 @@ namespace PigeonEngine
 	}
 	void ESkinnedMesh::ClearBindPose()
 	{
-		if (BindPoseValue.Length() > 0u)
+		if (BindPoseValue.Num() > 0)
 		{
-			BindPoseValue.Clear();
+			BindPoseValue.Empty();
 		}
-		if (BindPoseIndex.Length() > 0u)
+		if (BindPoseIndex.Num() > 0)
 		{
-			BindPoseIndex.Clear();
+			BindPoseIndex.Empty();
 		}
 	}
 	void ESkinnedMesh::GenerateBindPoseIndex()
 	{
-		if (BindPoseIndex.Length() > 0u)
+		if (BindPoseIndex.Num() > 0)
 		{
-			BindPoseIndex.Clear();
+			BindPoseIndex.Empty();
 		}
 		EffectBoneNum = 0u;
-		if (BindPoseValue.Length() == 0u)
+		if (BindPoseValue.Num() <= 0)
 		{
 			return;
 		}
@@ -965,7 +965,7 @@ namespace PigeonEngine
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Try to add invalid skin data."));
 			return FALSE;
 		}
-		if (Skins.Length() >= EMesh::MeshVertexLayoutPartMaxNum)
+		if (Skins.Num<UINT32>() >= EMesh::MeshVertexLayoutPartMaxNum)
 		{
 			PE_FAILED((ENGINE_ASSET_ERROR), ("Skin mesh can not contains skin datas over EMesh::MeshVertexLayoutPartMaxNum."));
 			return FALSE;
@@ -975,7 +975,7 @@ namespace PigeonEngine
 			if (!CheckVertexLayoutPartExist(EVertexLayoutType::MESH_SKIN, FindIndex))
 			{
 				SetVertexLayoutPartExistInternal(EVertexLayoutType::MESH_SKIN, FindIndex, TRUE);
-				const UINT32 NewIndex = Skins.Length();
+				const UINT32 NewIndex = Skins.Num<UINT32>();
 				Skins.Add(ESkinData());
 				Skins[NewIndex].PartType = InSkinData->PartType << FindIndex;
 				Skins[NewIndex].ElementNum = InSkinData->ElementNum;
@@ -994,36 +994,36 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkinnedMesh::RemoveSkinElement(UINT32 InLayoutIndex)
 	{
-		if ((Skins.Length() > 0u) && CheckVertexLayoutPartExist(EVertexLayoutType::MESH_SKIN, InLayoutIndex))
+		if ((Skins.Num() > 0) && CheckVertexLayoutPartExist(EVertexLayoutType::MESH_SKIN, InLayoutIndex))
 		{
 			auto MoveSkinData = [](ESkinData& InA, ESkinData& InB)->void
 			{
 				ESkinData TempData;
-				TempData.PartType = InA.PartType;
-				TempData.ElementNum = InA.ElementNum;
-				TempData.Stride = InA.Stride;
-				TempData.Indices = InA.Indices;
-				TempData.Weights = InA.Weights;
-				InA.PartType = InB.PartType;
-				InA.ElementNum = InB.ElementNum;
-				InA.Stride = InB.Stride;
-				InA.Indices = InB.Indices;
-				InA.Weights = InB.Weights;
-				InB.PartType = TempData.PartType;
-				InB.ElementNum = TempData.ElementNum;
-				InB.Stride = TempData.Stride;
-				InB.Indices = TempData.Indices;
-				InB.Weights = TempData.Weights;
+				TempData.PartType	= InA.PartType;
+				TempData.ElementNum	= InA.ElementNum;
+				TempData.Stride		= InA.Stride;
+				TempData.Indices	= InA.Indices;
+				TempData.Weights	= InA.Weights;
+				InA.PartType		= InB.PartType;
+				InA.ElementNum		= InB.ElementNum;
+				InA.Stride			= InB.Stride;
+				InA.Indices			= InB.Indices;
+				InA.Weights			= InB.Weights;
+				InB.PartType		= TempData.PartType;
+				InB.ElementNum		= TempData.ElementNum;
+				InB.Stride			= TempData.Stride;
+				InB.Indices			= TempData.Indices;
+				InB.Weights			= TempData.Weights;
 			};
 			const UINT32 DeleteLayoutType = EVertexLayoutType::MESH_SKIN << InLayoutIndex;
-			for (UINT32 Index = 0u, Length = Skins.Length(); Index < Length; Index++)
+			for (INT32 Index = 0, Length = Skins.Num(); Index < Length; Index++)
 			{
 				if (Skins[Index].PartType == DeleteLayoutType)
 				{
 					Skins[Index].Release();
-					if (Index != (Length - 1u))
+					if (Index != (Length - 1))
 					{
-						MoveSkinData(Skins[Index], Skins[Length - 1u]);
+						MoveSkinData(Skins[Index], Skins[Length - 1]);
 					}
 					Skins.Pop();
 					SetVertexLayoutPartExistInternal(EVertexLayoutType::MESH_SKIN, InLayoutIndex, FALSE);
@@ -1038,10 +1038,10 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkinnedMesh::GetSkinElement(UINT32 InLayoutIndex, const ESkinData*& OutSkinData)const
 	{
-		if ((Skins.Length() > 0u) && CheckVertexLayoutPartExist(EVertexLayoutType::MESH_SKIN, InLayoutIndex))
+		if ((Skins.Num() > 0) && CheckVertexLayoutPartExist(EVertexLayoutType::MESH_SKIN, InLayoutIndex))
 		{
 			const UINT32 DeleteLayoutType = EVertexLayoutType::MESH_SKIN << InLayoutIndex;
-			for (UINT32 Index = 0u, Length = Skins.Length(); Index < Length; Index++)
+			for (INT32 Index = 0u, Length = Skins.Num(); Index < Length; Index++)
 			{
 				if (Skins[Index].PartType == DeleteLayoutType)
 				{
@@ -1061,11 +1061,11 @@ namespace PigeonEngine
 	}
 	void ESkinnedMesh::UnsafeReleaseSkinPart()
 	{
-		for (UINT32 i = 0u, n = Skins.Length(); i < n; i++)
+		for (INT32 i = 0, n = Skins.Num(); i < n; i++)
 		{
 			Skins[i].Release();
 		}
-		Skins.Clear();
+		Skins.Empty();
 	}
 
 	EMeshRenderResource::EMeshRenderResource()
@@ -1081,13 +1081,13 @@ namespace PigeonEngine
 	}
 	BOOL32 EMeshRenderResource::IsRenderResourceValid()const
 	{
-		if ((IndexRenderResource.IsRenderResourceValid()) && (VertexRenderResources.Length() > 0u))
+		if ((IndexRenderResource.IsRenderResourceValid()) && (VertexRenderResources.Num() > 0))
 		{
 			BOOL32 Result = TRUE;
 			for (auto It = VertexRenderResources.Begin(); It != VertexRenderResources.End(); It++)
 			{
 				const TArray<RVertexBufferResource*>& Buffers = It->second;
-				if (const UINT32 BufferNum = Buffers.Length(); BufferNum > 0u)
+				if (const UINT32 BufferNum = Buffers.Num<UINT32>(); BufferNum > 0u)
 				{
 					for (UINT32 i = 0u; i < BufferNum; i++)
 					{
@@ -1105,12 +1105,12 @@ namespace PigeonEngine
 	void EMeshRenderResource::ReleaseRenderResource()
 	{
 		IndexRenderResource.ReleaseRenderResource();
-		if (VertexRenderResources.Length() > 0u)
+		if (VertexRenderResources.Num() > 0)
 		{
 			for (auto It = VertexRenderResources.Begin(); It != VertexRenderResources.End(); It++)
 			{
 				TArray<RVertexBufferResource*>& Buffers = It->second;
-				if (const UINT32 BufferNum = Buffers.Length(); BufferNum > 0u)
+				if (const UINT32 BufferNum = Buffers.Num<UINT32>(); BufferNum > 0u)
 				{
 					for (UINT32 i = 0u; i < BufferNum; i++)
 					{
@@ -1121,10 +1121,10 @@ namespace PigeonEngine
 							Buffers[i] = nullptr;
 						}
 					}
-					Buffers.Clear();
+					Buffers.Empty();
 				}
 			}
-			VertexRenderResources.Clear();
+			VertexRenderResources.Empty();
 		}
 	}
 	const RIndexBufferResource* EMeshRenderResource::GetIndexRenderResource()const
@@ -1207,7 +1207,7 @@ namespace PigeonEngine
 	BOOL32 EMeshRenderResource::CreateVertexRenderResourceInternal(const EMesh* InMesh)
 	{
 		const EMesh::EVertexPart& MeshVertices = InMesh->GetVertexPart();
-		if (MeshVertices.Length() == 0u)
+		if (MeshVertices.Num() <= 0)
 		{
 #if _EDITOR_ONLY
 			EString ErrorInfo("Create vertex render resource but mesh [name = ");
@@ -1217,12 +1217,12 @@ namespace PigeonEngine
 #endif
 			return FALSE;
 		}
-		if (VertexRenderResources.Length() > 0u)
+		if (VertexRenderResources.Num() > 0)
 		{
 			for (auto It = VertexRenderResources.Begin(); It != VertexRenderResources.End(); It++)
 			{
 				TArray<RVertexBufferResource*>& Buffers = It->second;
-				if (const UINT32 BufferNum = Buffers.Length(); BufferNum > 0u)
+				if (const UINT32 BufferNum = Buffers.Num<UINT32>(); BufferNum > 0u)
 				{
 					for (UINT32 i = 0u; i < BufferNum; i++)
 					{
@@ -1233,10 +1233,10 @@ namespace PigeonEngine
 							Buffers[i] = nullptr;
 						}
 					}
-					Buffers.Clear();
+					Buffers.Empty();
 				}
 			}
-			VertexRenderResources.Clear();
+			VertexRenderResources.Empty();
 		}
 		RDeviceD3D11* RenderDevice = RDeviceD3D11::GetDeviceSingleton();
 		BOOL32 FullyCreated = TRUE;
@@ -1289,7 +1289,7 @@ namespace PigeonEngine
 			return;
 		}
 		IndexRenderResource = Other->IndexRenderResource;
-		if (Other->VertexRenderResources.Length() > 0u)
+		if (Other->VertexRenderResources.Num() > 0)
 		{
 			for (auto It = Other->VertexRenderResources.Begin(); It != Other->VertexRenderResources.End(); It++)
 			{
@@ -1379,10 +1379,10 @@ namespace PigeonEngine
 	}
 	BOOL32 ESkinnedMeshRenderResource::IsRenderResourceValid()const
 	{
-		if (SkinRenderResources.Length() > 0u)
+		if (SkinRenderResources.Num() > 0)
 		{
 			BOOL32 Result = TRUE;
-			for (UINT32 i = 0u, n = SkinRenderResources.Length(); i < n; i++)
+			for (INT32 i = 0, n = SkinRenderResources.Num(); i < n; i++)
 			{
 				Result = Result && SkinRenderResources[i].IsRenderResourceValid();
 			}
@@ -1417,7 +1417,7 @@ namespace PigeonEngine
 	void ESkinnedMeshRenderResource::ReleaseRenderResource()
 	{
 		SkinnedMesh	= nullptr;
-		for (UINT32 i = 0u, n = SkinRenderResources.Length(); i < n; i++)
+		for (INT32 i = 0, n = SkinRenderResources.Num(); i < n; i++)
 		{
 			SkinRenderResources[i].ReleaseRenderResource();
 		}
@@ -1430,7 +1430,7 @@ namespace PigeonEngine
 	BOOL32 ESkinnedMeshRenderResource::CreateSkinRenderResourceInternal()
 	{
 #if _EDITOR_ONLY
-		const UINT32 MeshSkinnedBoneNum = ((!!SkinnedMesh) && SkinnedMesh->IsResourceValid()) ? (SkinnedMesh->GetBindPoseIndex().Length()) : 0u;
+		const INT32 MeshSkinnedBoneNum = ((!!SkinnedMesh) && SkinnedMesh->IsResourceValid()) ? (SkinnedMesh->GetBindPoseIndex().Num()) : 0;
 #endif
 		if ((!SkinnedMesh) || (!(SkinnedMesh->IsResourceValid())))
 		{
@@ -1439,14 +1439,14 @@ namespace PigeonEngine
 			{
 				PE_FAILED((ENGINE_ASSET_ERROR), ("Create skin render resource but skinned mesh is null."));
 			}
-			else if (MeshSkinnedBoneNum == 0u)
+			else if (MeshSkinnedBoneNum <= 0)
 			{
 				EString ErrorInfo("Create skin render resource but skinned mesh [name = ");
 				ErrorInfo += SkinnedMesh->GetMeshName();
 				ErrorInfo += "] does not contain bone datas.";
 				PE_FAILED((ENGINE_ASSET_ERROR), (*ErrorInfo));
 			}
-			if (MeshSkinnedBoneNum > RCommonSettings::RENDER_MESH_BONE_NUM_MAX)
+			if (((USHORT)MeshSkinnedBoneNum) > RCommonSettings::RENDER_MESH_BONE_NUM_MAX)
 			{
 				EString ErrorInfo("Create skin render resource but skinned mesh [name = ");
 				ErrorInfo += SkinnedMesh->GetMeshName();
@@ -1460,18 +1460,18 @@ namespace PigeonEngine
 #endif
 			return FALSE;
 		}
-		if (const UINT32 SkinRenderResourceNum = SkinRenderResources.Length(); SkinRenderResourceNum > 0u)
+		if (const UINT32 SkinRenderResourceNum = SkinRenderResources.Num<UINT32>(); SkinRenderResourceNum > 0u)
 		{
 			for (UINT32 SkinRenderResourceIndex = 0u; SkinRenderResourceIndex < SkinRenderResourceNum; SkinRenderResourceIndex++)
 			{
 				SkinRenderResources[SkinRenderResourceIndex].ReleaseRenderResource();
 			}
-			SkinRenderResources.Clear();
+			SkinRenderResources.Empty();
 		}
 		RDeviceD3D11* RenderDevice = RDeviceD3D11::GetDeviceSingleton();
 		BOOL32 FullyCreated = TRUE;
 		const ESkinnedMesh::ESkinPart& Skins = SkinnedMesh->GetSkinPart();
-		for (UINT32 SkinIndex = 0u, SkinNum = Skins.Length(); SkinIndex < SkinNum; SkinIndex++)
+		for (INT32 SkinIndex = 0u, SkinNum = Skins.Num(); SkinIndex < SkinNum; SkinIndex++)
 		{
 			const ESkinData& SkinData = Skins[SkinIndex];
 			const UINT32 EffectBoneNum = SkinData.Stride / sizeof(FLOAT);
@@ -1559,9 +1559,9 @@ namespace PigeonEngine
 		{
 			return;
 		}
-		if (Other->SkinRenderResources.Length() > 0u)
+		if (Other->SkinRenderResources.Num() > 0)
 		{
-			for (UINT32 i = 0u, n = Other->SkinRenderResources.Length(); i < n; i++)
+			for (INT32 i = 0, n = Other->SkinRenderResources.Num(); i < n; i++)
 			{
 				SkinRenderResources.Add(Other->SkinRenderResources[i]);
 			}
@@ -1769,11 +1769,11 @@ namespace PigeonEngine
 			return FALSE;
 		}
 		UINT32 SavedMeshCount = 0u;
-		for (UINT32 i = 0u, n = AssimpMeshes.Length(); i < n; i++)
+		for (INT32 i = 0, n = AssimpMeshes.Num(); i < n; i++)
 		{
 			EStaticMesh& AssimpMesh = AssimpMeshes[i];
 			EString OutputName(InAssetName);
-			if (i > 0u)
+			if (i > 0)
 			{
 				OutputName += "_";
 				OutputName += ToString(i);
@@ -1839,11 +1839,11 @@ namespace PigeonEngine
 			return FALSE;
 		}
 		UINT32 SavedMeshCount = 0u;
-		for (UINT32 i = 0u, n = AssimpMeshes.Length(); i < n; i++)
+		for (INT32 i = 0, n = AssimpMeshes.Num(); i < n; i++)
 		{
 			ESkinnedMesh& AssimpMesh = AssimpMeshes[i];
 			EString OutputName(InAssetName);
-			if (i > 0u)
+			if (i > 0)
 			{
 				OutputName += "_";
 				OutputName += ToString(i);
@@ -2246,7 +2246,7 @@ namespace PigeonEngine
 			LOAD_ASSET_MEMORY(UINT32, sizeof(UINT32), TempSubmeshNum);
 			if (TempSubmeshNum > 0u)
 			{
-				MeshSubmeshPart.Resize(static_cast<UINT32>(TempSubmeshNum));
+				MeshSubmeshPart.SetNum(static_cast<UINT32>(TempSubmeshNum));
 				for (UINT32 i = 0u; i < TempSubmeshNum; i++)
 				{
 					ESubmeshData& MeshSubmeshData = MeshSubmeshPart[i];
@@ -2276,7 +2276,7 @@ namespace PigeonEngine
 			LOAD_ASSET_MEMORY(UINT32, sizeof(UINT32), TempVertexPartNum);
 			if (TempVertexPartNum > 0u)
 			{
-				MeshVertexPart.Resize(static_cast<UINT32>(TempVertexPartNum));
+				MeshVertexPart.SetNum(static_cast<UINT32>(TempVertexPartNum));
 				for (UINT32 i = 0u; i < TempVertexPartNum; i++)
 				{
 					EVertexData& MeshVertexData = MeshVertexPart[i];
@@ -2327,7 +2327,7 @@ namespace PigeonEngine
 				LOAD_ASSET_MEMORY(UINT32, sizeof(UINT32), TempSkinPartNum);
 				if (TempSkinPartNum > 0u)
 				{
-					MeshSkinPart.Resize(static_cast<UINT32>(TempSkinPartNum));
+					MeshSkinPart.SetNum(static_cast<UINT32>(TempSkinPartNum));
 					for (UINT32 i = 0u; i < TempSkinPartNum; i++)
 					{
 						ESkinData& MeshSkinData = MeshSkinPart[i];
@@ -2378,7 +2378,7 @@ namespace PigeonEngine
 				Result += sizeof(EBoundAABB);		// AABB
 				Result += sizeof(UINT32);			// Vertex layout
 				Result += sizeof(UINT32);			// Submesh element num
-				Result += sizeof(ESubmeshData) * InMesh->GetSubmeshPart().Length();	// Submesh datas
+				Result += sizeof(ESubmeshData) * InMesh->GetSubmeshPart().Num<UINT32>();	// Submesh datas
 			}
 			{
 				Result += sizeof(UINT32);	// Indices element num
@@ -2389,7 +2389,7 @@ namespace PigeonEngine
 			{
 				const EMesh::EVertexPart& VertexPart = InMesh->GetVertexPart();
 				Result += sizeof(UINT32);	// Vertex part element num
-				for (UINT32 VertexIndex = 0u, VertexNum = VertexPart.Length(); VertexIndex < VertexNum; VertexIndex++)
+				for (INT32 VertexIndex = 0, VertexNum = VertexPart.Num(); VertexIndex < VertexNum; VertexIndex++)
 				{
 					const EVertexData& VertexData = VertexPart[VertexIndex];
 					Result += sizeof(UINT32);	// Vertices element num
@@ -2406,14 +2406,14 @@ namespace PigeonEngine
 				if (TempMeshPtr)
 #endif
 				{
-					PE_CHECK((ENGINE_ASSET_ERROR), ("Check skinned mesh bind pose num error."), ((TempMeshPtr->GetBindPoseValue().Length()) == (TempMeshPtr->GetBindPoseIndex().Length())));
+					PE_CHECK((ENGINE_ASSET_ERROR), ("Check skinned mesh bind pose num error."), ((TempMeshPtr->GetBindPoseValue().Num()) == (TempMeshPtr->GetBindPoseIndex().Num())));
 					Result += sizeof(UINT32);	// Bind pose num
-					Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(Matrix4x4)) * TempMeshPtr->GetBindPoseValue().Length();	// Bind pose value datas
-					Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(USHORT)) * TempMeshPtr->GetBindPoseIndex().Length();		// Bind pose Index datas
+					Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(Matrix4x4)) * TempMeshPtr->GetBindPoseValue().Num<UINT32>();	// Bind pose value datas
+					Result += (sizeof(CHAR) * EEngineSettings::ENGINE_BONE_NAME_LENGTH_MAX + sizeof(USHORT)) * TempMeshPtr->GetBindPoseIndex().Num<UINT32>();		// Bind pose Index datas
 					Result += sizeof(UINT32);	// Effect bone num
 					const ESkinnedMesh::ESkinPart& SkinPart = TempMeshPtr->GetSkinPart();
 					Result += sizeof(UINT32);	// Skin part num
-					for (UINT32 SkinIndex = 0u, SkinNum = SkinPart.Length(); SkinIndex < SkinNum; SkinIndex++)
+					for (INT32 SkinIndex = 0, SkinNum = SkinPart.Num(); SkinIndex < SkinNum; SkinIndex++)
 					{
 						const ESkinData& SkinData = SkinPart[SkinIndex];
 						const UINT32 EffectBoneNum = SkinData.Stride / sizeof(FLOAT);
@@ -2488,9 +2488,9 @@ namespace PigeonEngine
 		{
 			const EMesh::ESubmeshPart& SubmeshPart = InMeshResource->GetSubmeshPart();
 
-			SAVE_ASSET_MEMORY(UINT32, static_cast<UINT32>(SubmeshPart.Length()));
+			SAVE_ASSET_MEMORY(UINT32, (SubmeshPart.Num<UINT32>()));
 
-			for (UINT32 i = 0u, n = SubmeshPart.Length(); i < n; i++)
+			for (INT32 i = 0, n = SubmeshPart.Num(); i < n; i++)
 			{
 				const ESubmeshData& SubmeshData = SubmeshPart[i];
 
@@ -2508,9 +2508,9 @@ namespace PigeonEngine
 		{
 			const EMesh::EVertexPart& VertexPart = InMeshResource->GetVertexPart();
 
-			SAVE_ASSET_MEMORY(UINT32, static_cast<UINT32>(VertexPart.Length()));
+			SAVE_ASSET_MEMORY(UINT32, (VertexPart.Num<UINT32>()));
 
-			for (UINT32 i = 0u, n = VertexPart.Length(); i < n; i++)
+			for (INT32 i = 0, n = VertexPart.Num(); i < n; i++)
 			{
 				const EVertexData& VertexData = VertexPart[i];
 
@@ -2530,8 +2530,8 @@ namespace PigeonEngine
 			{
 				const ESkinnedMesh::EBindPoseValue& BindPoseValues = TempMeshPtr->GetBindPoseValue();
 				const ESkinnedMesh::EBindPoseIndex& BindPoseIndices = TempMeshPtr->GetBindPoseIndex();
-				PE_CHECK((ENGINE_ASSET_ERROR), ("Check save skinned mesh asset bind pose num error."), (BindPoseValues.Length() == BindPoseIndices.Length()));
-				const UINT32 BindPoseNum = BindPoseValues.Length();
+				PE_CHECK((ENGINE_ASSET_ERROR), ("Check save skinned mesh asset bind pose num error."), (BindPoseValues.Num() == BindPoseIndices.Num()));
+				const INT32 BindPoseNum = BindPoseValues.Num();
 
 				SAVE_ASSET_MEMORY(UINT32, static_cast<UINT32>(BindPoseNum));
 
@@ -2553,9 +2553,9 @@ namespace PigeonEngine
 
 				const ESkinnedMesh::ESkinPart& SkinPart = TempMeshPtr->GetSkinPart();
 
-				SAVE_ASSET_MEMORY(UINT32, static_cast<UINT32>(SkinPart.Length()));
+				SAVE_ASSET_MEMORY(UINT32, (SkinPart.Num<UINT32>()));
 
-				for (UINT32 i = 0u, n = SkinPart.Length(); i < n; i++)
+				for (INT32 i = 0, n = SkinPart.Num(); i < n; i++)
 				{
 					const ESkinData& SkinData = SkinPart[i];
 					PE_CHECK((ENGINE_ASSET_ERROR), ("Check skinned mesh effect bone num error."), ((SkinData.Stride / sizeof(FLOAT)) == EffectBoneNum));

@@ -71,8 +71,8 @@ namespace PigeonEngine
 		InitCommands.DoCommands();
 		InitCommands.EmptyQueue();
 		RawData.Release();
-		ShaderParameterNames.Clear();
-		ShaderParameters.Clear();
+		ShaderParameterNames.Empty();
+		ShaderParameters.Empty();
 	}
 	EShaderParameter* EShaderStruct::FindParameter(const EString& InParamName)
 	{
@@ -83,7 +83,7 @@ namespace PigeonEngine
 #endif
 		{
 #if _EDITOR_ONLY
-			if (ParamIndex < ShaderParameters.Length())
+			if (ParamIndex < ShaderParameters.Num<UINT32>())
 #endif
 			{
 				return (&(ShaderParameters[ParamIndex]));
@@ -316,7 +316,7 @@ namespace PigeonEngine
 #endif
 			{
 #if _EDITOR_ONLY
-				if (ParamIndex < ShaderParameters.Length())
+				if (ParamIndex < ShaderParameters.Num<UINT32>())
 #endif
 				{
 					Check((RawData.Size < ((ULONGLONG)((UINT32)(-1)))));

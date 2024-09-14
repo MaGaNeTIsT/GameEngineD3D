@@ -38,9 +38,10 @@ namespace PigeonEngine
         V&                                 operator[](const K& Key);
         const V&                           operator[](const K& Key)const;
 
-        PE_NODISCARD UINT32 Length() const
+        template<typename _TOtherSizeType = INT32, TEnableIfType<TIsIntegral<_TOtherSizeType>::value, _TOtherSizeType> = 0>
+        PE_NODISCARD _TOtherSizeType Num() const
         {
-            return static_cast<UINT32>(HashMap.size());
+            return static_cast<_TOtherSizeType>(HashMap.size());
         }
         
         void Add   (const K& Key, const V& Value);
@@ -54,7 +55,7 @@ namespace PigeonEngine
         void GenerateKeyArray  (TArray<K>& OutKeys);
         void GenerateValueArray(TArray<V>& OutValues);
 
-        void Clear();
+        void Empty();
         
         typename TIterator Begin()
         {
@@ -226,7 +227,7 @@ namespace PigeonEngine
     }
 
     template <typename K, typename V, class Hash, class Pred, class Alloc>
-    void THashMap<K, V, Hash, Pred, Alloc>::Clear()
+    void THashMap<K, V, Hash, Pred, Alloc>::Empty()
     {
         HashMap.clear();
     }

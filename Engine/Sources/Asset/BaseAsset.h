@@ -273,14 +273,14 @@ namespace PigeonEngine
 				{
 					if (TempData && TempData == InDataValue)
 					{
-						return (SavedDatas.Length());
+						return (SavedDatas.Num<UINT32>());
 					}
 					SavedDatas.Remove(InKeyValue);
 					delete TempData;
 				}
 			}
 			SavedDatas.Add(InKeyValue, InDataValue);
-			return (SavedDatas.Length());
+			return (SavedDatas.Num<UINT32>());
 		}
 		/*
 		* Remove item with InKeyValue in mapped datas.
@@ -294,7 +294,7 @@ namespace PigeonEngine
 				SavedDatas.Remove(InKeyValue);
 				delete TempData;
 			}
-			return (SavedDatas.Length());
+			return (SavedDatas.Num<UINT32>());
 		}
 		/*
 		* Find item with InKeyValue in mapped datas.
@@ -319,13 +319,13 @@ namespace PigeonEngine
 		*/
 		void Clear()
 		{
-			if (SavedDatas.Length() > 0u)
+			if (SavedDatas.Num() > 0)
 			{
 				for (auto it = SavedDatas.Begin(); it != SavedDatas.End(); it++)
 				{
 					delete (it->second);
 				}
-				SavedDatas.Clear();
+				SavedDatas.Empty();
 			}
 		}
 		/*
@@ -333,7 +333,7 @@ namespace PigeonEngine
 		*/
 		UINT32 Size()const
 		{
-			return (SavedDatas.Length());
+			return (SavedDatas.Num<UINT32>());
 		}
 	protected:
 		TMap<TKeyType, TAssetType*> SavedDatas;

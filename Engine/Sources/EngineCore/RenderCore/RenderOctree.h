@@ -31,7 +31,7 @@ namespace PigeonEngine
 		ROctreeNode(const ROctreeNode& Other)noexcept : Origin(Other.Origin), ElementIndex(Other.ElementIndex), ParentIndex(Other.ParentIndex), ChildrenIndex(Other.ChildrenIndex) {}
 		ROctreeNode& operator=(const ROctreeNode& Other)
 		{
-			ChildrenIndex.Clear();
+			ChildrenIndex.Empty();
 			Origin			= Other.Origin;
 			ElementIndex	= Other.ElementIndex;
 			ParentIndex		= Other.ParentIndex;
@@ -87,7 +87,7 @@ namespace PigeonEngine
 		template<typename _TCustomType, typename _TLambdaType, typename _TConditionType>
 		void BackwardRecursionNode(INT32 InNodeIndex, _TCustomType InCustomValue, const _TLambdaType& InFunc, const _TConditionType& InCond)
 		{
-			if ((InNodeIndex < 0) || (InNodeIndex >= ((INT32)(Nodes.Length()))))
+			if ((InNodeIndex < 0) || (InNodeIndex >= (Nodes.Num())))
 			{
 				return;
 			}
@@ -95,9 +95,9 @@ namespace PigeonEngine
 			if (InCond(TempNode, InCustomValue))
 			{
 				_TCustomType NewCustomValue = InFunc(TempNode, InCustomValue);
-				if (TempNode.ChildrenIndex.Length() > 0u)
+				if (TempNode.ChildrenIndex.Num() > 0)
 				{
-					for (UINT32 ChildIndex = 0u, ChildNum = TempNode.ChildrenIndex.Length(); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = TempNode.ChildrenIndex.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						BackwardRecursionNode<_TCustomType, _TLambdaType, _TConditionType>(TempNode.ChildrenIndex[ChildIndex], NewCustomValue, InFunc, InCond);
 					}
@@ -115,9 +115,9 @@ namespace PigeonEngine
 			if (InCond(TempNode, InCustomValue))
 			{
 				_TCustomType NewCustomValue = InFunc(TempNode, InCustomValue);
-				if (TempNode.ChildrenIndex.Length() > 0u)
+				if (TempNode.ChildrenIndex.Num() > 0)
 				{
-					for (UINT32 ChildIndex = 0u, ChildNum = TempNode.ChildrenIndex.Length(); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = TempNode.ChildrenIndex.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						BackwardRecursionNode<_TCustomType, _TLambdaType, _TConditionType>(TempNode.ChildrenIndex[ChildIndex], NewCustomValue, InFunc, InCond);
 					}
@@ -135,9 +135,9 @@ namespace PigeonEngine
 			if (InCond(TempNode))
 			{
 				InFunc(TempNode);
-				if (TempNode.ChildrenIndex.Length() > 0u)
+				if (TempNode.ChildrenIndex.Num() > 0)
 				{
-					for (UINT32 ChildIndex = 0u, ChildNum = TempNode.ChildrenIndex.Length(); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = TempNode.ChildrenIndex.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						BackwardRecursionNode<_TLambdaType, _TConditionType>(TempNode.ChildrenIndex[ChildIndex], InFunc, InCond);
 					}
@@ -155,9 +155,9 @@ namespace PigeonEngine
 			if (InCond(TempNode))
 			{
 				InFunc(TempNode);
-				if (TempNode.ChildrenIndex.Length() > 0u)
+				if (TempNode.ChildrenIndex.Num() > 0)
 				{
-					for (UINT32 ChildIndex = 0u, ChildNum = TempNode.ChildrenIndex.Length(); ChildIndex < ChildNum; ChildIndex++)
+					for (INT32 ChildIndex = 0, ChildNum = TempNode.ChildrenIndex.Num(); ChildIndex < ChildNum; ChildIndex++)
 					{
 						BackwardRecursionNode<_TLambdaType, _TConditionType>(TempNode.ChildrenIndex[ChildIndex], InFunc, InCond);
 					}
@@ -167,7 +167,7 @@ namespace PigeonEngine
 		template<typename _TCustomType, typename _TLambdaType, typename _TConditionType>
 		void ForwardRecursionNode(INT32 InNodeIndex, _TCustomType InCustomValue, const _TLambdaType& InFunc, const _TConditionType& InCond)
 		{
-			if ((InNodeIndex < 0) || (InNodeIndex >= ((INT32)(Nodes.Length()))))
+			if ((InNodeIndex < 0) || (InNodeIndex >= (Nodes.Num())))
 			{
 				return;
 			}
@@ -181,7 +181,7 @@ namespace PigeonEngine
 		template<typename _TCustomType, typename _TLambdaType, typename _TConditionType>
 		void ForwardRecursionNode(INT32 InNodeIndex, _TCustomType InCustomValue, const _TLambdaType& InFunc, const _TConditionType& InCond)const
 		{
-			if ((InNodeIndex < 0) || (InNodeIndex >= ((INT32)(Nodes.Length()))))
+			if ((InNodeIndex < 0) || (InNodeIndex >= (Nodes.Num())))
 			{
 				return;
 			}
@@ -195,7 +195,7 @@ namespace PigeonEngine
 		template<typename _TLambdaType, typename _TConditionType>
 		void ForwardRecursionNode(INT32 InNodeIndex, const _TLambdaType& InFunc, const _TConditionType& InCond)
 		{
-			if ((InNodeIndex < 0) || (InNodeIndex >= ((INT32)(Nodes.Length()))))
+			if ((InNodeIndex < 0) || (InNodeIndex >= (Nodes.Num())))
 			{
 				return;
 			}
@@ -209,7 +209,7 @@ namespace PigeonEngine
 		template<typename _TLambdaType, typename _TConditionType>
 		void ForwardRecursionNode(INT32 InNodeIndex, const _TLambdaType& InFunc, const _TConditionType& InCond)const
 		{
-			if ((InNodeIndex < 0) || (InNodeIndex >= ((INT32)(Nodes.Length()))))
+			if ((InNodeIndex < 0) || (InNodeIndex >= (Nodes.Num())))
 			{
 				return;
 			}

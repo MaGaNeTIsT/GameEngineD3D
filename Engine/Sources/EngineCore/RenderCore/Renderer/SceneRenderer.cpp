@@ -205,7 +205,7 @@ namespace PigeonEngine
 	}
 	void RSceneRenderer::ShutDown()
 	{
-		if (ViewSceneTextures.Length() > 0u)
+		if (ViewSceneTextures.Num() > 0)
 		{
 			for (auto It = ViewSceneTextures.Begin(); It != ViewSceneTextures.End(); It++)
 			{
@@ -217,14 +217,14 @@ namespace PigeonEngine
 				delete (TempPtr);
 				TempPtr = nullptr;
 			}
-			ViewSceneTextures.Clear();
+			ViewSceneTextures.Empty();
 		}
-		if (ViewShadowMaps.Length() > 0u)
+		if (ViewShadowMaps.Num() > 0)
 		{
 			for (auto It = ViewShadowMaps.Begin(); It != ViewShadowMaps.End(); It++)
 			{
 				RShadowMapType& TempShadowMaps = It->second;
-				if (TempShadowMaps.Length() > 0u)
+				if (TempShadowMaps.Num() > 0)
 				{
 					for (auto ItSM = TempShadowMaps.Begin(); ItSM != TempShadowMaps.End(); ItSM++)
 					{
@@ -236,10 +236,10 @@ namespace PigeonEngine
 						delete (TempPtr);
 						TempPtr = nullptr;
 					}
-					TempShadowMaps.Clear();
+					TempShadowMaps.Empty();
 				}
 			}
-			ViewSceneTextures.Clear();
+			ViewSceneTextures.Empty();
 		}
 
 		{
@@ -300,7 +300,7 @@ namespace PigeonEngine
 		FinalOutputView = 0u;
 		TArray<RViewProxy*>& ViewProxies = Scene->GetViewProxies().SceneProxies;
 		{
-			for (UINT32 ViewIndex = 0u, ViewNum = ViewProxies.Length(); ViewIndex < ViewNum; ViewIndex++)
+			for (INT32 ViewIndex = 0, ViewNum = ViewProxies.Num(); ViewIndex < ViewNum; ViewIndex++)
 			{
 				RViewProxy* ViewProxy = ViewProxies[ViewIndex];
 #if _EDITOR_ONLY
@@ -318,7 +318,7 @@ namespace PigeonEngine
 			}
 		}
 
-		for (UINT32 ViewIndex = 0u, ViewNum = ViewProxies.Length(); ViewIndex < ViewNum; ViewIndex++)
+		for (INT32 ViewIndex = 0, ViewNum = ViewProxies.Num(); ViewIndex < ViewNum; ViewIndex++)
 		{
 			RViewProxy* ViewProxy = ViewProxies[ViewIndex];
 #if _EDITOR_ONLY
@@ -358,7 +358,7 @@ namespace PigeonEngine
 		RDeviceD3D11* RenderDevice = RDeviceD3D11::GetDeviceSingleton();
 
 		const TArray<RViewProxy*>& ViewProxies = Scene->GetViewProxies().SceneProxies;
-		for (UINT32 ViewIndex = 0u, ViewNum = ViewProxies.Length(); ViewIndex < ViewNum; ViewIndex++)
+		for (INT32 ViewIndex = 0, ViewNum = ViewProxies.Num(); ViewIndex < ViewNum; ViewIndex++)
 		{
 			const RViewProxy* ViewProxy = ViewProxies[ViewIndex];
 #if _EDITOR_ONLY
@@ -616,10 +616,10 @@ namespace PigeonEngine
 
 			TArray<RDirectionalLightSceneProxy::RVisibilityMapType>&	LayerVisibilityMap	= VisibilityMaps[InViewProxy->GetUniqueID()];
 			const TArray<EViewDomainInfo>&								DomainInfos			= ViewDomainInfos[InViewProxy->GetUniqueID()];
-			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), ((ViewDomainInfos.Length() > 0u) && ((!(LightProxy->IsLightUseCascadeShadow())) || ((LightProxy->IsLightUseCascadeShadow()) && (!!(LightProxy->GetCascadeShadowData())) && ((LightProxy->GetCascadeShadowData()->Layers.Length()) == (ViewDomainInfos.Length()))))));
-			for (UINT32 DomainIndex = 0u, DomainNum = DomainInfos.Length(); DomainIndex < DomainNum; DomainIndex++)
+			PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), ((ViewDomainInfos.Num() > 0) && ((!(LightProxy->IsLightUseCascadeShadow())) || ((LightProxy->IsLightUseCascadeShadow()) && (!!(LightProxy->GetCascadeShadowData())) && ((LightProxy->GetCascadeShadowData()->Layers.Num()) == (ViewDomainInfos.Num()))))));
+			for (INT32 DomainIndex = 0, DomainNum = DomainInfos.Num(); DomainIndex < DomainNum; DomainIndex++)
 			{
-				if (DomainIndex >= LayerVisibilityMap.Length())
+				if (DomainIndex >= LayerVisibilityMap.Num())
 				{
 					LayerVisibilityMap.Add(RDirectionalLightSceneProxy::RVisibilityMapType());
 				}
@@ -656,7 +656,7 @@ namespace PigeonEngine
 #endif
 						RDirectionalLightSceneProxy::RPerViewDomainInfoType& ViewDomainInfos = LightProxy->GetViewDomainInfos();
 						const TArray<EViewDomainInfo>& DomainInfos = ViewDomainInfos[InViewProxy->GetUniqueID()];
-						PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), (ViewDomainInfos.Length() > 0u));
+						PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), (ViewDomainInfos.Num() > 0));
 						const EViewDomainInfo& DomainInfo = DomainInfos[0];
 
 						DLightParams.UpdateParameterValue(DLightIndex, LightProxy->GetWorldRotation(), DomainInfo, LightProxy->GetLightData());
@@ -681,7 +681,7 @@ namespace PigeonEngine
 						{
 							RDirectionalLightSceneProxy::RPerViewDomainInfoType& ViewDomainInfos = LightProxy->GetViewDomainInfos();
 							const TArray<EViewDomainInfo>& DomainInfos = ViewDomainInfos[InViewProxy->GetUniqueID()];
-							PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), (ViewDomainInfos.Length() > 0u));
+							PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check light view domain invalid."), (ViewDomainInfos.Num() > 0));
 							const EViewDomainInfo& DomainInfo = DomainInfos[0];
 
 							DLightParams.UpdateParameterValue(DLightIndex, LightProxy->GetWorldRotation(), DomainInfo, LightProxy->GetLightData());
@@ -731,7 +731,7 @@ namespace PigeonEngine
 				RDirectionalLightSceneProxy::RPerViewDomainInfoType& ViewDomainInfos = LightProxy->GetViewDomainInfos();
 				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check renderer failed that light proxy view domain infos can not be empty."), (ViewDomainInfos.ContainsKey(InViewProxy->GetUniqueID())));
 				const TArray<EViewDomainInfo>& DomainInfos = ViewDomainInfos[InViewProxy->GetUniqueID()];
-				for (UINT32 DomainIndex = 0u, DomainNum = DomainInfos.Length(); DomainIndex < DomainNum; DomainIndex++)
+				for (INT32 DomainIndex = 0, DomainNum = DomainInfos.Num(); DomainIndex < DomainNum; DomainIndex++)
 				{
 					const EViewDomainInfo& DomainInfo = DomainInfos[DomainIndex];
 					ShadowTextureSizes.Add(Vector2Int(DomainInfo.RenderViewport.Width, DomainInfo.RenderViewport.Height));
@@ -770,15 +770,15 @@ namespace PigeonEngine
 		const Vector3						TempAxis[3]			= { Vector3::XVector(), Vector3::YVector(), Vector3::ZVector() };
 		const TArray<ROctreeElement>&		OctreeElements		= SceneOctree.GetElements();
 		const TArray<ROctreeLayerInfo>&		OctreeLayerInfos	= SceneOctree.GetLayerInfos();
-		const INT32							OctreeLayerNum		= (INT32)(OctreeLayerInfos.Length());
+		const INT32							OctreeLayerNum		= OctreeLayerInfos.Num();
 
 		INT32 TempDeep = 0;
 		SceneOctree.BackwardRecursionNode(0, TempDeep,
 			[&InOutVisibilityMap, &OctreeElements](ROctreeNode& InNode, INT32 InDeep)->INT32
 			{
-				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check element index of octree node is valid failed."), ((InNode.ElementIndex >= 0) && (InNode.ElementIndex < ((INT32)(OctreeElements.Length())))));
+				PE_CHECK((ENGINE_RENDER_CORE_ERROR), ("Check element index of octree node is valid failed."), ((InNode.ElementIndex >= 0) && (InNode.ElementIndex < (OctreeElements.Num()))));
 				const ROctreeElement& OctreeElement = OctreeElements[InNode.ElementIndex];
-				for (UINT32 PrimitiveIndex = 0u, PrimitiveNum = OctreeElement.Primitives.Length(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
+				for (INT32 PrimitiveIndex = 0, PrimitiveNum = OctreeElement.Primitives.Num(); PrimitiveIndex < PrimitiveNum; PrimitiveIndex++)
 				{
 					const RPrimitiveSceneProxy* PrimitiveSceneProxy = OctreeElement.Primitives[PrimitiveIndex];
 #if _EDITOR_ONLY

@@ -57,9 +57,10 @@ namespace PigeonEngine
         typename TIterator      begin(){return Map.begin();}
         typename TIterator      end(){return Map.end();}
         
-        PE_NODISCARD UINT32 Length() const
+        template<typename _TOtherSizeType = INT32, TEnableIfType<TIsIntegral<_TOtherSizeType>::value, _TOtherSizeType> = 0>
+        PE_NODISCARD _TOtherSizeType Num() const
         {
-            return (static_cast<UINT32>(Map.size()));
+            return (static_cast<_TOtherSizeType>(Map.size()));
         }
         
         void Add   (const K& Key, const V& Value);
@@ -100,7 +101,7 @@ namespace PigeonEngine
         void GenerateKeyArray  (TArray<K>& OutKeys);
         void GenerateValueArray(TArray<V>& OutValues);
 
-        void Clear();
+        void Empty();
         
     private:
         std::map<K,V> Map;
@@ -115,7 +116,7 @@ namespace PigeonEngine
         }
         virtual ~TMapManager()
         {
-            Clear();
+            Empty();
         }
     public:
         /*
@@ -152,7 +153,7 @@ namespace PigeonEngine
                 }
             }
             SavedDatas.Add(InKeyValue, InDataValue);
-            return (SavedDatas.Length());
+            return (SavedDatas.Num<UINT32>());
         }
         /*
         * Remove item with InKeyValue in mapped datas.
@@ -166,7 +167,7 @@ namespace PigeonEngine
                 SavedDatas.Remove(InKeyValue);
                 delete TempData;
             }
-            return (SavedDatas.Length());
+            return (SavedDatas.Num<UINT32>());
         }
         /*
         * Find item with InKeyValue in mapped datas.
@@ -189,23 +190,23 @@ namespace PigeonEngine
         /*
         * Clear whole data list.
         */
-        void Clear()
+        void Empty()
         {
-            if (SavedDatas.Length() > 0u)
+            if (SavedDatas.Num() > 0)
             {
                 for (auto it = SavedDatas.Begin(); it != SavedDatas.End(); it++)
                 {
                     delete (it->second);
                 }
-                SavedDatas.Clear();
+                SavedDatas.Empty();
             }
         }
         /*
         * Get size of mapped datas.
         */
-        UINT32 Size()const
+        UINT32 Num()const
         {
-            return (SavedDatas.Length());
+            return (SavedDatas.Num());
         }
     protected:
         TMap<TKeyType, TValueType*> SavedDatas;
@@ -246,7 +247,7 @@ namespace PigeonEngine
         :
     Map(std::move(Other.Map))
     {
-        Other.Clear();
+        Other.Empty();
     }
 
     template <typename K, typename V>
@@ -342,7 +343,7 @@ namespace PigeonEngine
     }
 
     template <typename K, typename V>
-    void TMap<K, V>::Clear()
+    void TMap<K, V>::Empty()
     {
         Map.clear();
     }

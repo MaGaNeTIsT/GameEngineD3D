@@ -74,7 +74,7 @@ namespace PigeonEngine
 		}
 		BOOL8 bSelectedFolder= CurrentSelectedFolder == Node;
 		
-		const ImGuiTreeNodeFlags TreeNodeFlag = (Node->GetChildrenFolder().Length() > 0 ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Leaf);
+		const ImGuiTreeNodeFlags TreeNodeFlag = (Node->GetChildrenFolder().Num() > 0 ? ImGuiTreeNodeFlags_None : ImGuiTreeNodeFlags_Leaf);
 		const BOOL8 bMenuOpened = ImGui::TreeNodeEx(*(EString("##") + Node->GetDisplayName() + EString("_FolderTreeNode")), TreeNodeFlag);
 		ImGui::SameLine();
 		const BOOL8 bSelected	= ImGui::Selectable(*Node->GetDisplayName(), &bSelectedFolder);
@@ -111,7 +111,7 @@ namespace PigeonEngine
 	
 	void EFolderTreeNode::SetChildrenFiles(const TArray<EString>& Paths)
 	{
-		ChildrenFile.Clear();
+		ChildrenFile.Empty();
 		for(const auto& elem : Paths)
 		{
 			if(elem.Contains(".PAsset"))
@@ -133,8 +133,8 @@ namespace PigeonEngine
 
 	void EFolderTreeNode::ClearChildren()
 	{
-		ChildrenFolder.Clear();
-		ChildrenFile.Clear();
+		ChildrenFolder.Empty();
+		ChildrenFile.Empty();
 		
 	}
 
@@ -351,7 +351,7 @@ namespace PigeonEngine
 					auto ChildrenFolder = Current->GetChildrenFolder();
 					FLOAT window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 					UINT32 i = 0;
-					for(; i < ChildrenFolder.Length(); ++i)
+					for (UINT32 n = ChildrenFolder.Num<UINT32>(); i < n; ++i)
 					{
 						ImGui::PushID(i);
 						ImGui::BeginChild("asdas", ImVec2(120, 150), FALSE);

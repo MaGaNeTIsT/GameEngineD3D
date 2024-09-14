@@ -8,9 +8,9 @@ namespace PigeonEngine
     {
         FLOAT XInput;
         FLOAT YInput;
-        bool bJump;
-        bool bRun;
-        bool bCrouch;
+        BOOL8 bJump;
+        BOOL8 bRun;
+        BOOL8 bCrouch;
     };
     class PCharacter;
     class PCharacterController : public PController

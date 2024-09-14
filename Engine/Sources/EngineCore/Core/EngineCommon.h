@@ -92,23 +92,23 @@ namespace PigeonEngine
 		}
 		void CopyFromOtherCurve(const ETransformTimeCurve& Other)
 		{
-			if (Other.PositionKeys.Length() > 0u)
+			if (Other.PositionKeys.Num() > 0)
 			{
-				for (UINT32 i = 0u, n = Other.PositionKeys.Length(); i < n; i++)
+				for (INT32 i = 0, n = Other.PositionKeys.Num(); i < n; i++)
 				{
 					PositionKeys.Add(Other.PositionKeys[i]);
 				}
 			}
-			if (Other.RotationKeys.Length() > 0u)
+			if (Other.RotationKeys.Num() > 0)
 			{
-				for (UINT32 i = 0u, n = Other.RotationKeys.Length(); i < n; i++)
+				for (INT32 i = 0, n = Other.RotationKeys.Num(); i < n; i++)
 				{
 					RotationKeys.Add(Other.RotationKeys[i]);
 				}
 			}
-			if (Other.ScalingKeys.Length() > 0u)
+			if (Other.ScalingKeys.Num() > 0)
 			{
-				for (UINT32 i = 0u, n = Other.ScalingKeys.Length(); i < n; i++)
+				for (INT32 i = 0, n = Other.ScalingKeys.Num(); i < n; i++)
 				{
 					ScalingKeys.Add(Other.ScalingKeys[i]);
 				}
@@ -146,9 +146,9 @@ namespace PigeonEngine
 		}
 		void CalculateBoundWithSpace(const Vector3& InLocation, const Quaternion& InRotation, const Vector3& InScaling, TArray<Vector3>& OutPoints)
 		{
-			if (OutPoints.Length() != 8u)
+			if (OutPoints.Num() != 8)
 			{
-				OutPoints.Resize(8u);
+				OutPoints.SetNum(8);
 			}
 			const Matrix4x4 SpaceMatrix(MakeMatrix4x4(InLocation, InRotation, InScaling));
 			OutPoints[0] = Matrix4x4TransformPosition(SpaceMatrix, Vector3(AABBMin.x, AABBMax.y, AABBMax.z));
@@ -162,12 +162,12 @@ namespace PigeonEngine
 		}
 		static void CalculateSeparatingProjectionWorldSpace(const TArray<Vector3>& InPoints, const TArray<Vector3>& InSeparatingAxis, TArray<Vector2>& OutProjections)
 		{
-			const UINT32 SeparatingAxisNum = InSeparatingAxis.Length();
-			if (OutProjections.Length() > 0u)
+			const UINT32 SeparatingAxisNum = InSeparatingAxis.Num<UINT32>();
+			if (OutProjections.Num() > 0)
 			{
-				OutProjections.Clear();
+				OutProjections.Empty();
 			}
-			if ((SeparatingAxisNum == 0u) || (InPoints.Length() != 8u))
+			if ((SeparatingAxisNum == 0u) || (InPoints.Num() != 8))
 			{
 				return;
 			}
@@ -188,8 +188,8 @@ namespace PigeonEngine
 		}
 		static BOOL32 IsProjectionOverlap(const TArray<Vector2>& AProjections, const TArray<Vector2>& BProjections)
 		{
-			const UINT32 ProjectionNum = AProjections.Length();
-			if ((ProjectionNum == 0u) || (ProjectionNum != BProjections.Length()))
+			const UINT32 ProjectionNum = AProjections.Num<UINT32>();
+			if ((ProjectionNum == 0u) || (ProjectionNum != BProjections.Num<UINT32>()))
 			{
 				return FALSE;
 			}
@@ -819,13 +819,13 @@ namespace PigeonEngine
 		}
 		ECascadeShadowData& operator=(const ECascadeShadowData& Other)
 		{
-			if (Layers.Length() > 0u)
+			if (Layers.Num() > 0)
 			{
-				Layers.Clear();
+				Layers.Empty();
 			}
-			if (Borders.Length() > 0u)
+			if (Borders.Num() > 0)
 			{
-				Borders.Clear();
+				Borders.Empty();
 			}
 			IsUseShadow	= Other.IsUseShadow;
 			Layers		= Other.Layers;
@@ -834,20 +834,20 @@ namespace PigeonEngine
 		}
 		void Setup(const BOOL32 InIsUseShadow, const TArray<FLOAT>& InLayers, const TArray<FLOAT>& InBorders)
 		{
-			if (Layers.Length() > 0u)
+			if (Layers.Num() > 0)
 			{
-				Layers.Clear();
+				Layers.Empty();
 			}
-			if (Borders.Length() > 0u)
+			if (Borders.Num() > 0)
 			{
-				Borders.Clear();
+				Borders.Empty();
 			}
 			IsUseShadow = InIsUseShadow;
 			if (!InIsUseShadow)
 			{
 				return;
 			}
-			PE_CHECK((ENGINE_WORLD_ERROR), ("Check CSM failed that layer or border or cascade num is invalid."), ((InLayers.Length() > 0u) && (InLayers.Length() == (InLayers.Length() + 1u))));
+			PE_CHECK((ENGINE_WORLD_ERROR), ("Check CSM failed that layer or border or cascade num is invalid."), ((InLayers.Num() > 0) && (InLayers.Num() == (InLayers.Num() + 1))));
 			Layers	= InLayers;
 			Borders	= InBorders;
 		}
